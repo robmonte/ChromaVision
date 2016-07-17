@@ -23,6 +23,7 @@ public class ResultActivity extends AppCompatActivity {
     ImageView mImageView;
     Bitmap resultBitmap;
     MainMenuActivity mMain;
+    Uri resultUri = mMain.photoUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +31,14 @@ public class ResultActivity extends AppCompatActivity {
         setContentView(R.layout.activity_result);
         mImageView = (ImageView) findViewById(R.id.resultImage);
         System.out.println("in result activity.");
+        try {
+            resultBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), resultUri);
+        } catch (IOException ex) {
+
+        }
+        mImageView.setImageBitmap(resultBitmap);
 //        File file = new File(mMain.photoUri.getPath());
     }
 
 }
+
