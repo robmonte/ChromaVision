@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -35,11 +36,11 @@ public class MainMenuActivity extends AppCompatActivity{
     static final int GALLERY_REQUEST_CODE = 2;
     static final int LOAD_FILE_REQUEST_CODE = 3;
 
-    private Uri fileUri;
+    public Uri photoUri;
     public String mCurrentPhotoPath;
     private Bitmap resultBitmap;
-
-//    ImageView mImageView;
+    public File storageDir;
+    public File photoFile;
 
     /**
      * Create a collision-resistant file name.
@@ -50,22 +51,10 @@ public class MainMenuActivity extends AppCompatActivity{
     private File createImageFile() throws IOException {
 
         // get the local time presentation
-        // construct a locale from language
-        // "en" shorts for 'English'
-        // see at 'Locale' android developer
         Locale mylocale = new Locale("en");
-
-        // create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", mylocale).format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
-
-        // get a directory to save the photo
-        // getExternalStoragePublicDirectory returns a proper directory for shared photos,
-        // Which means the photo is accessible by all apps.
-        //File storageDir = getExternalStoragePublicDirectory(DIRECTORY_PICTURES);
-        //= getAlbumStorageDir("ChromaVision");
-
-        File storageDir = getAlbumStorageDir("ChromaVision");
+        storageDir = getAlbumStorageDir("ChromaVision");
 
         File image = File.createTempFile(
                 imageFileName,      // prefix
@@ -73,7 +62,6 @@ public class MainMenuActivity extends AppCompatActivity{
                 storageDir          // directory
         );
 
-        // Save a file: path for use with ACTION_VIEW intents
         mCurrentPhotoPath = "file:" + image.getAbsolutePath();
         return image;
     }
@@ -82,7 +70,6 @@ public class MainMenuActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
-//        mImageView = (ImageView) findViewById(R.id.resultImage);
     }
 
     /**
@@ -93,44 +80,27 @@ public class MainMenuActivity extends AppCompatActivity{
      **/
     public void takeAPicture(View view) {
 
-        // Create Intent to take a picture and return control to the
-        // calling application.
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-        /*
-        // create a file to save the image
-        // Uri: specify a path and file name where you'd like to save the picture
-        fileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE);
-
-        // set the image file name
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
-        */
-
-        File photoFile = null;
+        photoFile = null;
 
         try {
             photoFile = createImageFile();
         } catch (IOException ex) {
-//            System.out.println("create Image file failed");
         }
         Log.d(TAG, "testing");
         System.out.println("testing!!!!");
 
-        // Continue only if the file was successfully created
         if (photoFile != null) {
-            Uri photoURI = Uri.fromFile(photoFile);
-//            Uri photoURI = FileProvider.getUriForFile(this,
-//                    "cs371m.fileprovider",
-//                    photoFile);
-            Log.d(TAG, "logging: " + photoURI.toString());
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+            photoUri = Uri.fromFile(photoFile);
+//            Log.d(TAG, "logging: " + photoUri.toString());
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
             startActivityForResult(intent, CAMERA_REQUEST_CODE);
         }
-//        startActivity(intent);
+
     }
 
-    public File getAlbumStorageDir(String albumName) {
         // Get the directory for the user's public pictures directory.
+    public File getAlbumStorageDir(String albumName) {
         File file = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), albumName);
         if (!file.mkdirs()) {
@@ -141,18 +111,10 @@ public class MainMenuActivity extends AppCompatActivity{
 
     /** Called when the user click the 'pick from gallery' button */
     public void pickFromGallery(View view) {
-//        Intent intent = new Intent(this, GalleryActivity.class);
-//        Intent intent = new Intent(Intent.ACTION_PICK,
-//                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-//
-//        if (intent.resolveActivity(getPackageManager()) != null) {
-//            startActivityForResult(intent, GALLERY_REQUEST_CODE);
-//        }
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), GALLERY_REQUEST_CODE);
-//        startActivityForResult(intent, GALLERY_REQUEST_CODE);
     }
 
     /**
@@ -163,34 +125,22 @@ public class MainMenuActivity extends AppCompatActivity{
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // If the request went well(OK)
-//        super.onActivityResult(requestCode, resultCode, data);
-        // Uri targetUri = data.getData();
         System.out.println("get data");
         galleryAddPic();
         if (data == null) {
             System.out.println("No data available.");
         }
-        else if (resultCode == Activity.RESULT_OK) {
+        if (resultCode == Activity.RESULT_OK) {
             try {
+                System.out.println("resultCode is okay.");
                 // Check which request we're responding to
                 if (requestCode == CAMERA_REQUEST_CODE) {
-
-                /*
-                // Image captured and saved to fileUri specified in the Intent
-                 Toast.makeText(this, "Image saved to:\n" +
-                        data.getData(), Toast.LENGTH_LONG().show());
-                */
-
-                    // The Android Camera application encodes the photo in the
-                    // return Intent delivered to onActivityResult() as a small
-                    // Bitmap in the extras, under the key "data".
-                    galleryAddPic();
-                    Bundle extras = data.getExtras();
-                    resultBitmap = (Bitmap) extras.get("data");
-//                mImageView.setImageBitmap(imageBitmap);
+//                    galleryAddPic();
+//                    Bundle extras = data.getExtras();
+//                    resultBitmap = (Bitmap) extras.get("data");
+                    System.out.println("recevie camera.");
                     Intent resultIntent = new Intent(this, ResultActivity.class);
-                    resultIntent.putExtra("BitmapImage", resultBitmap);
+//                    resultIntent.putExtra("BitmapImage", resultBitmap);
                     startActivity(resultIntent);
 
                 } else if (requestCode == GALLERY_REQUEST_CODE) {
@@ -198,7 +148,7 @@ public class MainMenuActivity extends AppCompatActivity{
 //                InputStream inputStream = this.getContentResolver().openInputStream(data.getData());
 
                     // Get the image from data
-//                    Uri selectedImage = data.getData();
+                    Uri selectedImage = data.getData();
 //                    String[] filePathColumn = {MediaStore.Images.Media.DATA};
 //
 //                    // Get the cursor
@@ -215,9 +165,10 @@ public class MainMenuActivity extends AppCompatActivity{
 //                    Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show();
 //                    System.out.println("get data");
 //                    resultBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImage);
+                    System.out.println("receive picture from gallery.");
                     Intent resultIntent = new Intent(this, ResultActivity.class);
-//                    resultIntent.putExtra("BitmapImage", resultBitmap);
-                    startActivity(resultIntent);
+                    resultIntent.putExtra("Uri", selectedImage);
+                    startActivityForResult(resultIntent, GALLERY_REQUEST_CODE);
                 } else if (resultCode == RESULT_CANCELED) {
                     // User cancelled the image capture
 
@@ -234,8 +185,8 @@ public class MainMenuActivity extends AppCompatActivity{
     // Add the Photo to a Gallery
     private void galleryAddPic() {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        File f = new File(mCurrentPhotoPath);
-        Uri contentUri = Uri.fromFile(f);
+//        File f = new File(mCurrentPhotoPath);
+        Uri contentUri = Uri.fromFile(storageDir);
         mediaScanIntent.setData(contentUri);
         this.sendBroadcast(mediaScanIntent);
     }
