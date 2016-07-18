@@ -28,9 +28,33 @@ public class ResultActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result);
-        mImageView = (ImageView) findViewById(R.id.resultImage);
-        System.out.println("in result activity.");
-//        File file = new File(mMain.photoUri.getPath());
+//        Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show();
+
+
+
+        Intent intent = getIntent();
+
+        Uri picture = intent.getParcelableExtra("pictureUri");
+
+        System.out.println("Getting the cropped picture from " + picture);
+
+        mImageView = (ImageView)findViewById(R.id.resultImage);
+        mImageView.setImageURI(picture);
+
+
+//        resultBitmap = intent.getParcelableExtra("BitmapImage");
+//        mImageView = (ImageView) findViewById(R.id.resultImage);
+//        if (resultBitmap != null) {
+//            mImageView.setImageBitmap(resultBitmap);
+//        }
+
+
+
+
+        // Pulled code
+//        mImageView = (ImageView) findViewById(R.id.resultImage);
+//        System.out.println("in result activity.");
+////        File file = new File(mMain.photoUri.getPath());
     }
 
 }

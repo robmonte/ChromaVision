@@ -18,6 +18,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -61,6 +64,8 @@ public class MainMenuActivity extends AppCompatActivity{
                 ".jpg",             // suffix
                 storageDir          // directory
         );
+
+        CropImage.activity(android.net.Uri.parse(image.toURI().toString())).setGuidelines(CropImageView.Guidelines.ON).start(this);
 
         mCurrentPhotoPath = "file:" + image.getAbsolutePath();
         return image;
@@ -126,7 +131,26 @@ public class MainMenuActivity extends AppCompatActivity{
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         System.out.println("get data");
-        galleryAddPic();
+
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if (resultCode == RESULT_OK) {
+                Uri resultUri = result.getUri();
+
+                System.out.println("resultUri is " + resultUri.toString());
+
+                Intent cropped = new Intent(this, ResultActivity.class);
+
+                cropped.putExtra("pictureUri", resultUri);
+
+                startActivity(cropped);
+
+            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                Exception error = result.getError();
+            }
+        }
+
+        //galleryAddPic();
         if (data == null) {
             System.out.println("No data available.");
         }
@@ -138,17 +162,21 @@ public class MainMenuActivity extends AppCompatActivity{
 //                    galleryAddPic();
 //                    Bundle extras = data.getExtras();
 //                    resultBitmap = (Bitmap) extras.get("data");
-                    System.out.println("recevie camera.");
+                    System.out.println("receive camera.");
                     Intent resultIntent = new Intent(this, ResultActivity.class);
 //                    resultIntent.putExtra("BitmapImage", resultBitmap);
                     startActivity(resultIntent);
 
                 } else if (requestCode == GALLERY_REQUEST_CODE) {
+                    System.out.println("inside gallery request");
+
                     // Do something with the returned image
 //                InputStream inputStream = this.getContentResolver().openInputStream(data.getData());
 
                     // Get the image from data
                     Uri selectedImage = data.getData();
+
+
 //                    String[] filePathColumn = {MediaStore.Images.Media.DATA};
 //
 //                    // Get the cursor
@@ -167,7 +195,8 @@ public class MainMenuActivity extends AppCompatActivity{
 //                    resultBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImage);
                     System.out.println("receive picture from gallery.");
                     Intent resultIntent = new Intent(this, ResultActivity.class);
-                    resultIntent.putExtra("Uri", selectedImage);
+                    System.out.println("selectedImage gallery is " + selectedImage);
+                    resultIntent.putExtra("pictureUri", selectedImage);
                     startActivityForResult(resultIntent, GALLERY_REQUEST_CODE);
                 } else if (resultCode == RESULT_CANCELED) {
                     // User cancelled the image capture
