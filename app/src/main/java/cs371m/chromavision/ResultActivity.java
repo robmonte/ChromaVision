@@ -42,6 +42,8 @@ public class ResultActivity extends AppCompatActivity {
         mImageView.setImageURI(picture);
 
 
+
+
 //        resultBitmap = intent.getParcelableExtra("BitmapImage");
 //        mImageView = (ImageView) findViewById(R.id.resultImage);
 //        if (resultBitmap != null) {
