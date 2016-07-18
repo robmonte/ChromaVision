@@ -23,22 +23,38 @@ public class ResultActivity extends AppCompatActivity {
     ImageView mImageView;
     Bitmap resultBitmap;
     MainMenuActivity mMain;
-    Uri resultUri = mMain.photoUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result);
-        mImageView = (ImageView) findViewById(R.id.resultImage);
-        System.out.println("in result activity.");
-        try {
-            resultBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), resultUri);
-        } catch (IOException ex) {
+//        Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show();
 
-        }
-        mImageView.setImageBitmap(resultBitmap);
-//        File file = new File(mMain.photoUri.getPath());
+
+
+        Intent intent = getIntent();
+
+        Uri picture = intent.getParcelableExtra("pictureUri");
+
+        System.out.println("Getting the cropped picture from " + picture);
+
+        mImageView = (ImageView)findViewById(R.id.resultImage);
+        mImageView.setImageURI(picture);
+
+
+//        resultBitmap = intent.getParcelableExtra("BitmapImage");
+//        mImageView = (ImageView) findViewById(R.id.resultImage);
+//        if (resultBitmap != null) {
+//            mImageView.setImageBitmap(resultBitmap);
+//        }
+
+
+
+
+        // Pulled code
+//        mImageView = (ImageView) findViewById(R.id.resultImage);
+//        System.out.println("in result activity.");
+////        File file = new File(mMain.photoUri.getPath());
     }
 
 }
-
