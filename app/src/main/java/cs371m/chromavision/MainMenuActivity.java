@@ -22,8 +22,10 @@ import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -65,7 +67,8 @@ public class MainMenuActivity extends AppCompatActivity{
                 storageDir          // directory
         );
 
-        CropImage.activity(android.net.Uri.parse(image.toURI().toString())).setGuidelines(CropImageView.Guidelines.ON).start(this);
+        System.out.println("Calling crop");
+
 
         mCurrentPhotoPath = "file:" + image.getAbsolutePath();
         return image;
@@ -97,10 +100,12 @@ public class MainMenuActivity extends AppCompatActivity{
 
         if (photoFile != null) {
             photoUri = Uri.fromFile(photoFile);
-//            Log.d(TAG, "logging: " + photoUri.toString());
+            CropImage.activity(photoUri).setGuidelines(CropImageView.Guidelines.ON).start(this);
+            Log.d(TAG, "logging: " + photoUri.toString());
             intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
             startActivityForResult(intent, CAMERA_REQUEST_CODE);
         }
+
 
     }
 
@@ -176,6 +181,25 @@ public class MainMenuActivity extends AppCompatActivity{
                     // Get the image from data
                     Uri selectedImage = data.getData();
 
+                    File scaleFile = new File(selectedImage.toString());
+                    Bitmap scale = BitmapFactory.decodeFile(scaleFile.toString());
+
+                    scale = Bitmap.createScaledBitmap(scale, 1280, 720, true);
+
+
+                    storageDir = getAlbumStorageDir("ChromaVision");
+                    OutputStream fOut = null;
+                    File file = new File(storageDir, "scaled"+System.currentTimeMillis()); // the File to save to
+                    fOut = new FileOutputStream(file);
+
+                    scale.compress(Bitmap.CompressFormat.JPEG, 100, fOut); // saving the Bitmap to a file compressed as a JPEG with 85% compression rate
+                    fOut.flush();
+                    fOut.close(); // do not forget to close the stream
+
+                    Uri fileUri = android.net.Uri.parse(file.toURI().toString());
+
+
+
 
 //                    String[] filePathColumn = {MediaStore.Images.Media.DATA};
 //
@@ -193,9 +217,11 @@ public class MainMenuActivity extends AppCompatActivity{
 //                    Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show();
 //                    System.out.println("get data");
 //                    resultBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImage);
+
+
                     System.out.println("receive picture from gallery.");
                     Intent resultIntent = new Intent(this, ResultActivity.class);
-                    System.out.println("selectedImage gallery is " + selectedImage);
+                    System.out.println("selectedImage gallery is " + fileUri);
                     resultIntent.putExtra("pictureUri", selectedImage);
                     startActivityForResult(resultIntent, GALLERY_REQUEST_CODE);
                 } else if (resultCode == RESULT_CANCELED) {
