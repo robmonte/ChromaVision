@@ -124,14 +124,14 @@ public class MainMenuActivity extends AppCompatActivity{
             if (resultCode == RESULT_OK) {
                 Uri croppedImage = result.getUri();
 
-                InputStream galleryInput = null;
+                InputStream cameraInput = null;
                 try {
-                    galleryInput = getContentResolver().openInputStream(croppedImage);
+                    cameraInput = getContentResolver().openInputStream(croppedImage);
                 }
                 catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
-                Bitmap scale = BitmapFactory.decodeStream(galleryInput);
+                Bitmap scale = BitmapFactory.decodeStream(cameraInput);
 
                 scale = resizeImageToScreen(scale);
 
