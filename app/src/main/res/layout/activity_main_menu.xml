@@ -42,7 +42,8 @@
         android:layout_alignLeft="@+id/button1"
         android:layout_alignStart="@+id/button1"
         android:layout_below="@+id/button2"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:onClick="openFolder" />
 
     <Button
         android:layout_width="wrap_content"
@@ -50,6 +51,7 @@
         android:text="@string/tutorial"
         android:textSize="18sp"
         android:id="@+id/button4"
+        android:onClick="tutorial"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />

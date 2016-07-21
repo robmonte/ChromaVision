@@ -27,7 +27,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class MainMenuActivity extends AppCompatActivity{
+import static android.os.Environment.getDataDirectory;
+
+public class MainMenuActivity extends AppCompatActivity {
 
     public static final String TAG = "MainMenuActivity";
 
@@ -47,6 +49,7 @@ public class MainMenuActivity extends AppCompatActivity{
     /**
      * Create a collision-resistant file name.
      * Code come from 'Taking Photos Simply' android developer
+     *
      * @return a unique file name for a new photo using date-time stamp
      * @throws IOException
      */
@@ -64,7 +67,7 @@ public class MainMenuActivity extends AppCompatActivity{
      * Called when the user click the 'take a new picture' button
      * Create an intent to capture new pictures
      * MediaStore. ACTION_IMAGE_CAPTURE - Intent action type for
-     *       requesting an image from an existing camera application.
+     * requesting an image from an existing camera application.
      **/
     public void takeAPicture(View view) {
 
@@ -73,8 +76,7 @@ public class MainMenuActivity extends AppCompatActivity{
 
         try {
             photoFile = createImageFile();
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
             ex.printStackTrace();
         }
 
@@ -90,7 +92,7 @@ public class MainMenuActivity extends AppCompatActivity{
         }
     }
 
-        // Get the directory for the user's public pictures directory.
+    // Get the directory for the user's public pictures directory.
     public File getAlbumStorageDir(String albumName) {
         File file = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), albumName);
@@ -100,7 +102,9 @@ public class MainMenuActivity extends AppCompatActivity{
         return file;
     }
 
-    /** Called when the user click the 'pick from gallery' button */
+    /**
+     * Called when the user click the 'pick from gallery' button
+     */
     public void pickFromGallery(View view) {
         Intent intent = new Intent();
         intent.setType("image/*");
@@ -110,9 +114,10 @@ public class MainMenuActivity extends AppCompatActivity{
 
     /**
      * To receive the result from the subsequent activity
+     *
      * @param requestCode: which request this result is responding to
-     * @param resultCode: RESULT_OK means the request was successful
-     * @param data: a result in an Intent from the subsequent activity
+     * @param resultCode:  RESULT_OK means the request was successful
+     * @param data:        a result in an Intent from the subsequent activity
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -127,8 +132,7 @@ public class MainMenuActivity extends AppCompatActivity{
                 InputStream cameraInput = null;
                 try {
                     cameraInput = getContentResolver().openInputStream(croppedImage);
-                }
-                catch (FileNotFoundException e) {
+                } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
                 Bitmap scale = BitmapFactory.decodeStream(cameraInput);
@@ -142,8 +146,7 @@ public class MainMenuActivity extends AppCompatActivity{
 
                 try {
                     fOut = new FileOutputStream(file);
-                }
-                catch (FileNotFoundException e) {
+                } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
 
@@ -151,8 +154,7 @@ public class MainMenuActivity extends AppCompatActivity{
                 try {
                     fOut.flush();
                     fOut.close();
-                }
-                catch (IOException e) {
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
 
@@ -162,6 +164,9 @@ public class MainMenuActivity extends AppCompatActivity{
                 System.out.println("pictureCrop is " + fileUri.toString());
                 Intent cropped = new Intent(this, ResultActivity.class);
                 cropped.putExtra("pictureUri", fileUri);
+                System.out.println(scale.getWidth() + " " + scale.getHeight());
+                cropped.putExtra("width", scale.getWidth());
+                cropped.putExtra("height", scale.getHeight());
 
                 startActivity(cropped);
 
@@ -180,13 +185,8 @@ public class MainMenuActivity extends AppCompatActivity{
                 // Check which request we're responding to
                 if (requestCode == CAMERA_REQUEST_CODE) {
                     //galleryAddPic();
-//                    System.out.println("Inside CAMERA_REQUEST_CODE");
-//
-//                    Intent resultIntent = new Intent(this, ResultActivity.class);
-//                    startActivity(resultIntent);
 
-                }
-                else if (requestCode == GALLERY_REQUEST_CODE) {
+                } else if (requestCode == GALLERY_REQUEST_CODE) {
                     System.out.println("Inside GALLERY_REQUEST_CODE");
 
                     // Get the image from data
@@ -218,18 +218,17 @@ public class MainMenuActivity extends AppCompatActivity{
                     Intent resultIntent = new Intent(this, ResultActivity.class);
                     System.out.println("selectedImage gallery is " + fileUri);
                     resultIntent.putExtra("pictureUri", fileUri);
+                    resultIntent.putExtra("width", scale.getWidth());
+                    resultIntent.putExtra("height", scale.getHeight());
                     startActivityForResult(resultIntent, GALLERY_REQUEST_CODE);
-                }
-                else if (resultCode == RESULT_CANCELED) {
+                } else if (resultCode == RESULT_CANCELED) {
                     // User cancelled the image capture
 
-                }
-                else {
+                } else {
                     // Image capture failed, advise user
 
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show();
                 e.printStackTrace();
             }
@@ -261,7 +260,7 @@ public class MainMenuActivity extends AppCompatActivity{
 
         System.out.println("Screen resolution: " + screenWidth + "x" + screenHeight);
 
-        return Bitmap.createScaledBitmap(scale, (int)(width*scaleRatio), (int)(height*scaleRatio), true);
+        return Bitmap.createScaledBitmap(scale, (int) (width * scaleRatio), (int) (height * scaleRatio), true);
     }
 
     // Add the Photo to a Gallery
@@ -271,5 +270,18 @@ public class MainMenuActivity extends AppCompatActivity{
         mediaScanIntent.setData(contentUri);
         this.sendBroadcast(mediaScanIntent);
     }
+
+    public void tutorial(View view) {
+        Intent Tutorial = new Intent(this, TutorialActivity.class);
+        startActivity(Tutorial);
+    }
+
+    public void openFolder(View view) {
+        Uri selectedUri = Uri.parse(getFilesDir() + "");
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setDataAndType(selectedUri, "*/jpg");
+        startActivity(intent);
+    }
+
 
 }
