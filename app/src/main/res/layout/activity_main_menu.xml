@@ -1,59 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="cs371m.chromavision.SplashActivity">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.3"
+        >
+        <Button
+            android:layout_width="215dp"
+            android:layout_height="wrap_content"
+            android:text="@string/capture_a_new_picture"
+            android:textSize="26sp"
+            android:id="@+id/button1"
+            android:onClick="takeAPicture"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
 
-    <Button
-        android:layout_width="215dp"
-        android:layout_height="wrap_content"
-        android:text="@string/capture_a_new_picture"
-        android:textSize="26sp"
-        android:id="@+id/button1"
-        android:onClick="takeAPicture"
-        android:layout_marginTop="50dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+            />
 
-    <Button
-        android:layout_width="215dp"
-        android:layout_height="wrap_content"
-        android:text="@string/open_image_from_gallery"
-        android:textSize="26sp"
-        android:id="@+id/button2"
-        android:onClick="pickFromGallery"
-        android:layout_below="@+id/button1"
-        android:layout_alignLeft="@+id/button1"
-        android:layout_alignStart="@+id/button1"
-        android:layout_marginTop="50dp" />
+    </RelativeLayout>
 
-    <Button
-        android:layout_width="215dp"
-        android:layout_height="wrap_content"
-        android:text="@string/load_past_image_data"
-        android:textSize="26sp"
-        android:id="@+id/button3"
-        android:layout_marginTop="50dp"
-        android:layout_alignLeft="@+id/button1"
-        android:layout_alignStart="@+id/button1"
-        android:layout_below="@+id/button2"
-        android:layout_centerHorizontal="true"
-        android:onClick="openFolder" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.3"
+        >
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/tutorial"
-        android:textSize="18sp"
-        android:id="@+id/button4"
-        android:onClick="tutorial"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        <Button
+            android:layout_width="215dp"
+            android:layout_height="wrap_content"
+            android:text="@string/open_image_from_gallery"
+            android:textSize="26sp"
+            android:id="@+id/button2"
+            android:onClick="pickFromGallery"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            />
+    </RelativeLayout>
 
-</RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.3"
+        >
+
+        <Button
+            android:layout_width="215dp"
+            android:layout_height="wrap_content"
+            android:text="@string/load_past_image_data"
+            android:textSize="26sp"
+            android:id="@+id/button3"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.1"
+        >
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/tutorial"
+
+            android:textSize="18sp"
+            android:id="@+id/button4"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+    </RelativeLayout>
+
+</LinearLayout>
