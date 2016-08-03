@@ -8,7 +8,9 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.io.FileNotFoundException;
@@ -20,6 +22,7 @@ public class ResultActivity extends AppCompatActivity {
 
     ImageView mImageView;
     TextView mTextView;
+    protected ProgressBar mProgressBar;
 
     private enum COLORS { BLACK, VERY_DARK_RED, DARK_RED, MEDIUM_RED, BRIGHT_RED, PALE_RED, LIGHT_RED, VERY_LIGHT_RED, WHITE }
 
@@ -28,11 +31,14 @@ public class ResultActivity extends AppCompatActivity {
             Color.rgb(0xFF, 0x80, 0x80), Color.rgb(0xFF, 0xC0, 0xC0), Color.rgb(0xFF, 0xFF, 0xFF) };
 
     private int colorCount[] = new int[COLOR_LIST.length];
+    public double barStatus = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result);
+        mProgressBar = (ProgressBar)findViewById(R.id.progressBar);
+
 
         Intent intent = getIntent();
 
@@ -49,9 +55,9 @@ public class ResultActivity extends AppCompatActivity {
 
         mTextView = (TextView)findViewById(R.id.colorDataView);
 
-//        makePicture getpic = new makePicture();
+        makePicture getpic = new makePicture();
 // generateColorData(picture);
-//        getpic.execute(picture);
+        getpic.execute(picture);
         System.out.println(Arrays.toString(colorCount));
 
         double imageSize = width * height;
@@ -169,12 +175,17 @@ public class ResultActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
             System.out.println("test1");
+            publishProgress(25);
             Bitmap image = BitmapFactory.decodeStream(cameraInput);
             System.out.println("test2");
+            publishProgress(50);
             String[][] colors = new String[image.getHeight()][image.getWidth()];
             System.out.println("test3");
             int[][] result = convertTo2DWithoutUsingGetRGB(image, colors);
+            publishProgress(75);
             System.out.println("test4");
+            publishProgress(100);
+
             return result;
 
 
@@ -183,7 +194,15 @@ public class ResultActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(int[][] ints) {
             super.onPostExecute(ints);
+            mProgressBar.setVisibility(View.GONE);
+        }
 
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+
+            mProgressBar.setProgress(values[0]);
         }
 
         private int[][] convertTo2DWithoutUsingGetRGB(Bitmap image, String[][] colors) {
