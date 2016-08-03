@@ -24,6 +24,11 @@ public class ResultActivity extends AppCompatActivity {
     TextView mTextView;
     protected ProgressBar mProgressBar;
 
+
+
+
+
+
     private enum COLORS { BLACK, VERY_DARK_RED, DARK_RED, MEDIUM_RED, BRIGHT_RED, PALE_RED, LIGHT_RED, VERY_LIGHT_RED, WHITE }
 
     private static final int[] COLOR_LIST = { Color.rgb(0x00, 0x00, 0x00), Color.rgb(0x40, 0x00, 0x00), Color.rgb(0x80, 0x00, 0x00),
@@ -35,21 +40,14 @@ public class ResultActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Intent intent = getIntent();
+        Uri picture = intent.getParcelableExtra("pictureUri");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result);
         mProgressBar = (ProgressBar)findViewById(R.id.progressBar);
 
-
-        Intent intent = getIntent();
-
-        Uri picture = intent.getParcelableExtra("pictureUri");
-
-        int width = intent.getIntExtra("width", 1);
-        int height = intent.getIntExtra("height", 1);
-
-        System.out.println("Getting the cropped picture from " + picture);
-
         mImageView = (ImageView)findViewById(R.id.resultImage);
+        System.out.println("Getting the cropped picture from " + picture);
 
         mImageView.setImageURI(picture);
 
@@ -58,31 +56,7 @@ public class ResultActivity extends AppCompatActivity {
         makePicture getpic = new makePicture();
 // generateColorData(picture);
         getpic.execute(picture);
-        System.out.println(Arrays.toString(colorCount));
 
-        double imageSize = width * height;
-        String[] outputArray = new String[COLOR_LIST.length];
-
-        DecimalFormat df = new DecimalFormat("#.##");
-        colorCount[0] += colorCount[1];
-
-        for (int i=0; i<outputArray.length; i++) {
-            System.out.println(colorCount[i] + " / " + imageSize);
-            double percent = (colorCount[i] / imageSize) * 100;
-
-            if (i != 1)
-                outputArray[i] = COLORS.values()[i] + ": " + df.format(percent) + "% ";
-        }
-
-        StringBuilder output = new StringBuilder();
-        for (String s: outputArray) {
-            if (s != null) {
-                output.append(s);
-                output.append("\n");
-            }
-        }
-
-        mTextView.setText(output);
     }
 
 //    private void generateColorData(Uri pictureToProcess) {
@@ -161,9 +135,16 @@ public class ResultActivity extends AppCompatActivity {
 //
 //}
 
-    class makePicture extends AsyncTask<Uri, Integer, int[][]> {
+    class makePicture extends AsyncTask<Uri, Integer, StringBuilder> {
         @Override
-        protected int[][] doInBackground(Uri... params) {
+        protected StringBuilder doInBackground(Uri... params) {
+
+            Intent intent = getIntent();
+
+            int width = intent.getIntExtra("width", 1);
+            int height = intent.getIntExtra("height", 1);
+
+
 
 
             InputStream cameraInput = null;
@@ -185,16 +166,42 @@ public class ResultActivity extends AppCompatActivity {
             publishProgress(75);
             System.out.println("test4");
             publishProgress(100);
+            System.out.println(Arrays.toString(colorCount));
 
-            return result;
+            double imageSize = width * height;
+            String[] outputArray = new String[COLOR_LIST.length];
+
+            DecimalFormat df = new DecimalFormat("#.##");
+            colorCount[0] += colorCount[1];
+
+            for (int i=0; i<outputArray.length; i++) {
+                System.out.println(colorCount[i] + " / " + imageSize);
+                double percent = (colorCount[i] / imageSize) * 100;
+
+                if (i != 1)
+                    outputArray[i] = COLORS.values()[i] + ": " + df.format(percent) + "% ";
+            }
+
+            StringBuilder output = new StringBuilder();
+            for (String s: outputArray) {
+                if (s != null) {
+                    output.append(s);
+                    output.append("\n");
+                }
+            }
+
+
+
+            return output;
 
 
         }
 
         @Override
-        protected void onPostExecute(int[][] ints) {
-            super.onPostExecute(ints);
+        protected void onPostExecute(StringBuilder output) {
+            super.onPostExecute(output);
             mProgressBar.setVisibility(View.GONE);
+            mTextView.setText(output);
         }
 
 
@@ -203,6 +210,7 @@ public class ResultActivity extends AppCompatActivity {
             super.onProgressUpdate(values);
 
             mProgressBar.setProgress(values[0]);
+
         }
 
         private int[][] convertTo2DWithoutUsingGetRGB(Bitmap image, String[][] colors) {
