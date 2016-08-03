@@ -60,7 +60,7 @@
             android:id="@+id/button3"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            />
+            android:onClick="openFolder" />
 
     </RelativeLayout>
 
@@ -79,7 +79,8 @@
             android:id="@+id/button4"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
+            android:layout_alignParentEnd="true"
+            android:onClick="tutorial" />
     </RelativeLayout>
 
 </LinearLayout>

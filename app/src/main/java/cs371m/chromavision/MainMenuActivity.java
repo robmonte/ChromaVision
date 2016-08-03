@@ -27,8 +27,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import static android.os.Environment.getDataDirectory;
-
 public class MainMenuActivity extends AppCompatActivity {
 
     public static final String TAG = "MainMenuActivity";

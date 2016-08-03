@@ -43,7 +43,6 @@ public class ResultActivity extends AppCompatActivity {
         System.out.println("Getting the cropped picture from " + picture);
 
         mImageView = (ImageView)findViewById(R.id.resultImage);
-
         mImageView.setImageURI(picture);
 
         mTextView = (TextView)findViewById(R.id.colorDataView);
