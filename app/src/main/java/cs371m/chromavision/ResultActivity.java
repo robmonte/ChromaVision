@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
@@ -23,8 +24,8 @@ public class ResultActivity extends AppCompatActivity {
     private enum COLORS { BLACK, VERY_DARK_RED, DARK_RED, MEDIUM_RED, BRIGHT_RED, PALE_RED, LIGHT_RED, VERY_LIGHT_RED, WHITE }
 
     private static final int[] COLOR_LIST = { Color.rgb(0x00, 0x00, 0x00), Color.rgb(0x40, 0x00, 0x00), Color.rgb(0x80, 0x00, 0x00),
-                                                Color.rgb(0xC0, 0x00, 0x00), Color.rgb(0xFF, 0x00, 0x00), Color.rgb(0xFF, 0xC0, 0x00),
-                                                Color.rgb(0xFF, 0x80, 0x80), Color.rgb(0xFF, 0xC0, 0xC0), Color.rgb(0xFF, 0xFF, 0xFF) };
+            Color.rgb(0xC0, 0x00, 0x00), Color.rgb(0xFF, 0x00, 0x00), Color.rgb(0xFF, 0xC0, 0x00),
+            Color.rgb(0xFF, 0x80, 0x80), Color.rgb(0xFF, 0xC0, 0xC0), Color.rgb(0xFF, 0xFF, 0xFF) };
 
     private int colorCount[] = new int[COLOR_LIST.length];
 
@@ -43,12 +44,14 @@ public class ResultActivity extends AppCompatActivity {
         System.out.println("Getting the cropped picture from " + picture);
 
         mImageView = (ImageView)findViewById(R.id.resultImage);
+
         mImageView.setImageURI(picture);
 
         mTextView = (TextView)findViewById(R.id.colorDataView);
 
-        generateColorData(picture);
-
+//        makePicture getpic = new makePicture();
+// generateColorData(picture);
+//        getpic.execute(picture);
         System.out.println(Arrays.toString(colorCount));
 
         double imageSize = width * height;
@@ -76,78 +79,171 @@ public class ResultActivity extends AppCompatActivity {
         mTextView.setText(output);
     }
 
-    private void generateColorData(Uri pictureToProcess) {
-        InputStream cameraInput = null;
+//    private void generateColorData(Uri pictureToProcess) {
+//        InputStream cameraInput = null;
+//
+//        try {
+//            cameraInput = getContentResolver().openInputStream(pictureToProcess);
+//        }
+//        catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//
+//        Bitmap image = BitmapFactory.decodeStream(cameraInput);
+//
+//        String[][] colors = new String[image.getHeight()][image.getWidth()];
+//
+//        int[][] result = convertTo2DWithoutUsingGetRGB(image, colors);
+//    }
 
-        try {
-            cameraInput = getContentResolver().openInputStream(pictureToProcess);
-        }
-        catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+//    private int[][] convertTo2DWithoutUsingGetRGB(Bitmap image, String[][] colors) {
+//
+//        int width = image.getWidth();
+//        int height = image.getHeight();
+//
+//        int[] pixels = new int[width*height];
+//
+//        image.getPixels(pixels, 0, width, 0, 0, width, height);
+//
+//
+//        int[][] result = new int[height][width];
+//
+//        for (int pixel=0, row=0, col=0; pixel<pixels.length; pixel++) {
+//            int c = pixels[pixel];
+//
+//            colors[row][col] = colorDistanceEnum(c).toString();
+//
+//            col++;
+//            if (col == width) {
+//                col = 0;
+//                row++;
+//            }
+//        }
+//
+//        return result;
+//    }
 
-        Bitmap image = BitmapFactory.decodeStream(cameraInput);
+//    private COLORS colorDistanceEnum(int c) {
+//        double lowest = 442.0;
+//        int index = 0;
+//
+//        for (int i=0; i<COLOR_LIST.length; i++) {
+//            int r = Color.red(COLOR_LIST[i]);
+//            int g = Color.green(COLOR_LIST[i]);
+//            int b = Color.blue(COLOR_LIST[i]);
+//
+//            double low = distance(c, r, g, b);
+//
+//            if (low < lowest) {
+//                lowest = low;
+//                index = i;
+//            }
+//        }
+//
+//        colorCount[index]++;
+//
+//        return COLORS.values()[index];
+//    }
 
-        String[][] colors = new String[image.getHeight()][image.getWidth()];
+//    private static double distance(int c, int r, int g, int b) {
+//        double redDiff = Math.pow(Color.red(c) - r, 2);
+//        double greenDiff = Math.pow(Color.green(c) - g, 2);
+//        double blueDiff = Math.pow(Color.blue(c) - b, 2);
+//
+//        return Math.sqrt(redDiff + greenDiff + blueDiff);
+//    }
+//
+//}
 
-        int[][] result = convertTo2DWithoutUsingGetRGB(image, colors);
-    }
-
-    private int[][] convertTo2DWithoutUsingGetRGB(Bitmap image, String[][] colors) {
-
-        int width = image.getWidth();
-        int height = image.getHeight();
-
-        int[] pixels = new int[width*height];
-
-        image.getPixels(pixels, 0, width, 0, 0, width, height);
+    class makePicture extends AsyncTask<Uri, Integer, int[][]> {
+        @Override
+        protected int[][] doInBackground(Uri... params) {
 
 
-        int[][] result = new int[height][width];
+            InputStream cameraInput = null;
 
-        for (int pixel=0, row=0, col=0; pixel<pixels.length; pixel++) {
-            int c = pixels[pixel];
-
-            colors[row][col] = colorDistanceEnum(c).toString();
-
-            col++;
-            if (col == width) {
-                col = 0;
-                row++;
+            try {
+                cameraInput = getContentResolver().openInputStream(params[0]);
             }
-        }
-
-        return result;
-    }
-
-    private COLORS colorDistanceEnum(int c) {
-        double lowest = 442.0;
-        int index = 0;
-
-        for (int i=0; i<COLOR_LIST.length; i++) {
-            int r = Color.red(COLOR_LIST[i]);
-            int g = Color.green(COLOR_LIST[i]);
-            int b = Color.blue(COLOR_LIST[i]);
-
-            double low = distance(c, r, g, b);
-
-            if (low < lowest) {
-                lowest = low;
-                index = i;
+            catch (FileNotFoundException e) {
+                e.printStackTrace();
             }
+            System.out.println("test1");
+            Bitmap image = BitmapFactory.decodeStream(cameraInput);
+            System.out.println("test2");
+            String[][] colors = new String[image.getHeight()][image.getWidth()];
+            System.out.println("test3");
+            int[][] result = convertTo2DWithoutUsingGetRGB(image, colors);
+            System.out.println("test4");
+            return result;
+
+
         }
 
-        colorCount[index]++;
+        @Override
+        protected void onPostExecute(int[][] ints) {
+            super.onPostExecute(ints);
 
-        return COLORS.values()[index];
+        }
+
+        private int[][] convertTo2DWithoutUsingGetRGB(Bitmap image, String[][] colors) {
+
+            int width = image.getWidth();
+            int height = image.getHeight();
+
+            int[] pixels = new int[width*height];
+
+            image.getPixels(pixels, 0, width, 0, 0, width, height);
+
+
+            int[][] result = new int[height][width];
+
+            for (int pixel=0, row=0, col=0; pixel<pixels.length; pixel++) {
+                int c = pixels[pixel];
+
+                colors[row][col] = colorDistanceEnum(c).toString();
+
+                col++;
+                if (col == width) {
+                    col = 0;
+                    row++;
+                }
+            }
+
+            return result;
+        }
+        private COLORS colorDistanceEnum(int c) {
+            double lowest = 442.0;
+            int index = 0;
+
+            for (int i=0; i<COLOR_LIST.length; i++) {
+                int r = Color.red(COLOR_LIST[i]);
+                int g = Color.green(COLOR_LIST[i]);
+                int b = Color.blue(COLOR_LIST[i]);
+
+                double low = distance(c, r, g, b);
+
+                if (low < lowest) {
+                    lowest = low;
+                    index = i;
+                }
+            }
+
+            colorCount[index]++;
+
+            return COLORS.values()[index];
+        }
+
+        private double distance(int c, int r, int g, int b) {
+            double redDiff = Math.pow(Color.red(c) - r, 2);
+            double greenDiff = Math.pow(Color.green(c) - g, 2);
+            double blueDiff = Math.pow(Color.blue(c) - b, 2);
+
+            return Math.sqrt(redDiff + greenDiff + blueDiff);
+        }
+
+
     }
 
-    private static double distance(int c, int r, int g, int b) {
-        double redDiff = Math.pow(Color.red(c) - r, 2);
-        double greenDiff = Math.pow(Color.green(c) - g, 2);
-        double blueDiff = Math.pow(Color.blue(c) - b, 2);
-
-        return Math.sqrt(redDiff + greenDiff + blueDiff);
-    }
 
 }
