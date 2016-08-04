@@ -7,18 +7,29 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.Locale;
 
 public class ResultActivity extends AppCompatActivity {
+
+    private static final String TAG = "Result Activity";
 
     private TextView mTextView;
     private ProgressBar mProgressBar;
@@ -105,10 +116,10 @@ public class ResultActivity extends AppCompatActivity {
 //
 //        String[][] colors = new String[image.getHeight()][image.getWidth()];
 //
-//        int[][] result = convertTo2DWithoutUsingGetRGB(image, colors);
+//        int[][] result = determineColors(image, colors);
 //    }
 
-//    private int[][] convertTo2DWithoutUsingGetRGB(Bitmap image, String[][] colors) {
+//    private int[][] determineColors(Bitmap image, String[][] colors) {
 //
 //        int width = image.getWidth();
 //        int height = image.getHeight();
@@ -180,8 +191,6 @@ public class ResultActivity extends AppCompatActivity {
             int height = intent.getIntExtra("height", 1);
 
 
-
-
             InputStream cameraInput = null;
 
             try {
@@ -190,6 +199,7 @@ public class ResultActivity extends AppCompatActivity {
             catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
+
             System.out.println("test1");
             publishProgress(25);
             Bitmap image = BitmapFactory.decodeStream(cameraInput);
@@ -197,7 +207,50 @@ public class ResultActivity extends AppCompatActivity {
             publishProgress(50);
             String[][] colors = new String[image.getHeight()][image.getWidth()];
             System.out.println("test3");
-            int[][] result = convertTo2DWithoutUsingGetRGB(image, colors);
+
+
+            int[][] result = determineColors(image, colors);
+            int[][] newPicture = new int[height][width];
+
+            for (int i=0; i<colors.length; i++) {
+                for (int j=0; j<colors[i].length; j++) {
+                    String name = colors[i][j];
+
+                    int index = COLORS.valueOf(name).ordinal();
+
+                    newPicture[i][j] = COLOR_LIST[index];
+                }
+            }
+
+            Bitmap testOut = bitmapFromArray(newPicture);
+
+            File storageDir = getAlbumStorageDir("ChromaVisionDebug");
+
+            Locale mylocale = new Locale("en");
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", mylocale).format(new Date());
+            File file = new File(storageDir, "testColors" + timeStamp + ".jpg"); // the File to save to
+            OutputStream fOut = null;
+
+            try {
+                fOut = new FileOutputStream(file);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+
+            testOut.compress(Bitmap.CompressFormat.JPEG, 100, fOut); // saving the Bitmap to a file compressed as a JPEG with 100% compression rate
+            try {
+                if (fOut != null) {
+                    fOut.flush();
+                    fOut.close();
+                }
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+
+
             publishProgress(75);
             System.out.println("test4");
             publishProgress(100);
@@ -207,13 +260,12 @@ public class ResultActivity extends AppCompatActivity {
             String[] outputArray = new String[COLOR_LIST.length];
 
             DecimalFormat df = new DecimalFormat("#.##");
-            colorCount[0] += colorCount[1];
 
             for (int i=0; i<outputArray.length; i++) {
                 System.out.println(colorCount[i] + " / " + imageSize);
                 double percent = (colorCount[i] / imageSize) * 100;
 
-                if (i != 1)
+                if (percent != 0)
                     outputArray[i] = COLORS.values()[i] + ": " + df.format(percent) + "% ";
             }
 
@@ -257,7 +309,16 @@ public class ResultActivity extends AppCompatActivity {
 
         }
 
-        private int[][] convertTo2DWithoutUsingGetRGB(Bitmap image, String[][] colors) {
+        public File getAlbumStorageDir(String albumName) {
+            File file = new File(Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_PICTURES), albumName);
+            if (!file.mkdirs()) {
+                Log.e(TAG, "Directory not created");
+            }
+            return file;
+        }
+
+        private int[][] determineColors(Bitmap image, String[][] colors) {
 
             int width = image.getWidth();
             int height = image.getHeight();
@@ -272,7 +333,15 @@ public class ResultActivity extends AppCompatActivity {
             for (int pixel=0, row=0, col=0; pixel<pixels.length; pixel++) {
                 int c = pixels[pixel];
 
-                colors[row][col] = colorDistanceEnum(c).toString();
+                float hsv[] = new float[3];
+
+                Color.RGBToHSV(Color.red(c), Color.green(c), Color.blue(c), hsv);
+
+                //colors[row][col] = colorDistanceEnum(c).toString();
+                colors[row][col] = hsbEnum(hsv).toString();
+
+                int index = COLORS.valueOf(colors[row][col]).ordinal();
+                result[row][col] = COLOR_LIST[index];
 
                 col++;
                 if (col == width) {
@@ -286,27 +355,27 @@ public class ResultActivity extends AppCompatActivity {
             return result;
         }
 
-        private COLORS colorDistanceEnum(int c) {
-            double lowest = 442.0;
-            int index = 0;
-
-            for (int i=0; i<COLOR_LIST.length; i++) {
-                int r = Color.red(COLOR_LIST[i]);
-                int g = Color.green(COLOR_LIST[i]);
-                int b = Color.blue(COLOR_LIST[i]);
-
-                double low = distance(c, r, g, b);
-
-                if (low < lowest) {
-                    lowest = low;
-                    index = i;
-                }
-            }
-
-            colorCount[index]++;
-
-            return COLORS.values()[index];
-        }
+//        private COLORS colorDistanceEnum(int c) {
+//            double lowest = 442.0;
+//            int index = 0;
+//
+//            for (int i=0; i<COLOR_LIST.length; i++) {
+//                int r = Color.red(COLOR_LIST[i]);
+//                int g = Color.green(COLOR_LIST[i]);
+//                int b = Color.blue(COLOR_LIST[i]);
+//
+//                double low = distance(c, r, g, b);
+//
+//                if (low < lowest) {
+//                    lowest = low;
+//                    index = i;
+//                }
+//            }
+//
+//            colorCount[index]++;
+//
+//            return COLORS.values()[index];
+//        }
 
         private double distance(int c, int r, int g, int b) {
             double redDiff = Math.pow(Color.red(c) - r, 2);
