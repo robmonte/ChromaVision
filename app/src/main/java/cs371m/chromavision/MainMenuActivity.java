@@ -1,13 +1,17 @@
 package cs371m.chromavision;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -31,8 +35,10 @@ public class MainMenuActivity extends AppCompatActivity {
 
     public static final String TAG = "MainMenuActivity";
 
-    static final int CAMERA_REQUEST_CODE = 1;
-    static final int GALLERY_REQUEST_CODE = 2;
+    private static final int CAMERA_REQUEST_CODE = 1;
+    private static final int GALLERY_REQUEST_CODE = 2;
+    private static final int REQUEST_CODE_PERMISSION = 3;
+    //private static final int REQUEST_STORAGE_PERMISSION = 4;
 
     private File storageDir;
 
@@ -41,7 +47,44 @@ public class MainMenuActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
 
+        int permissionCheck = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.CAMERA);
+
+        if (permissionCheck == PackageManager.PERMISSION_DENIED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
+                Log.d(TAG, "Camera permission denied!");
+            }
+            else {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE_PERMISSION);
+            }
+        }
+
         storageDir = getAlbumStorageDir("ChromaVision");
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_CODE_PERMISSION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                break;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
     }
 
     /**
@@ -58,6 +101,7 @@ public class MainMenuActivity extends AppCompatActivity {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", mylocale).format(new Date());
         String imageFileName = "temp" + timeStamp;
 
+        storageDir = getAlbumStorageDir("ChromaVision");
         return File.createTempFile(imageFileName, ".jpg", storageDir);
     }
 
@@ -68,6 +112,32 @@ public class MainMenuActivity extends AppCompatActivity {
      * requesting an image from an existing camera application.
      **/
     public void takeAPicture(View view) {
+
+//        int cameraCheck = ContextCompat.checkSelfPermission(this,
+//                Manifest.permission.CAMERA);
+//
+//        if (cameraCheck == PackageManager.PERMISSION_DENIED) {
+//            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
+//                Log.d(TAG, "Camera permission denied!");
+//            }
+//            else {
+//                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
+//            }
+//        }
+//
+//        int storageCheck = ContextCompat.checkSelfPermission(this,
+//                Manifest.permission.WRITE_EXTERNAL_STORAGE);
+//
+//        if (storageCheck == PackageManager.PERMISSION_DENIED) {
+//            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+//                Log.d(TAG, "Storage permission denied!");
+//            }
+//            else {
+//                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_STORAGE_PERMISSION);
+//            }
+//        }
+
+        Log.d(TAG, "After the requests!");
 
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         File photoFile = null;
@@ -140,6 +210,7 @@ public class MainMenuActivity extends AppCompatActivity {
                 OutputStream fOut = null;
                 Locale mylocale = new Locale("en");
                 String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", mylocale).format(new Date());
+                storageDir = getAlbumStorageDir("ChromaVision");
                 File file = new File(storageDir, "scaledcropped" + timeStamp + ".jpg"); // the File to save to
 
                 try {
@@ -233,6 +304,8 @@ public class MainMenuActivity extends AppCompatActivity {
         }
     }
 
+
+
     private Bitmap resizeImageToScreen(Bitmap scale) {
         DisplayMetrics dm = new DisplayMetrics();
 
@@ -264,6 +337,7 @@ public class MainMenuActivity extends AppCompatActivity {
     // Add the Photo to a Gallery
     private void galleryAddPic() {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        storageDir = getAlbumStorageDir("ChromaVision");
         Uri contentUri = Uri.fromFile(storageDir);
         mediaScanIntent.setData(contentUri);
         this.sendBroadcast(mediaScanIntent);
