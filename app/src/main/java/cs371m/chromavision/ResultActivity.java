@@ -20,23 +20,39 @@ import java.util.Arrays;
 
 public class ResultActivity extends AppCompatActivity {
 
-    ImageView mImageView;
-    TextView mTextView;
-    protected ProgressBar mProgressBar;
+    private TextView mTextView;
+    private ProgressBar mProgressBar;
+    private GenerateColorDataAsync mRunPicture;
 
 
+//    private enum COLORS { BLACK, VERY_DARK_RED, DARK_RED, MEDIUM_RED, BRIGHT_RED, PALE_RED, LIGHT_RED, VERY_LIGHT_RED, WHITE }
+//
+//    private static final int[] COLOR_LIST = { Color.rgb(0x00, 0x00, 0x00), Color.rgb(0x40, 0x00, 0x00), Color.rgb(0x80, 0x00, 0x00),
+//            Color.rgb(0xC0, 0x00, 0x00), Color.rgb(0xFF, 0x00, 0x00), Color.rgb(0xFF, 0xC0, 0x00),
+//            Color.rgb(0xFF, 0x80, 0x80), Color.rgb(0xFF, 0xC0, 0xC0), Color.rgb(0xFF, 0xFF, 0xFF) };
 
 
+    private enum COLORS { DARK_RED, RED, LIGHT_RED,
+        DARK_GREEN, GREEN, LIGHT_GREEN,
+        DARK_BLUE, BLUE, CYAN,
+        BROWN, ORANGE, LIGHT_ORANGE,
+        DARK_YELLOW, YELLOW, LIGHT_YELLOW,
+        DARK_PURPLE, PURPLE, PINK,
+        BLACK, GREY, WHITE,
+        DARK_GREY, LIGHT_GREY,
+        DARKER_GREEN, LIGHTER_GREEN }
 
-
-    private enum COLORS { BLACK, VERY_DARK_RED, DARK_RED, MEDIUM_RED, BRIGHT_RED, PALE_RED, LIGHT_RED, VERY_LIGHT_RED, WHITE }
-
-    private static final int[] COLOR_LIST = { Color.rgb(0x00, 0x00, 0x00), Color.rgb(0x40, 0x00, 0x00), Color.rgb(0x80, 0x00, 0x00),
-            Color.rgb(0xC0, 0x00, 0x00), Color.rgb(0xFF, 0x00, 0x00), Color.rgb(0xFF, 0xC0, 0x00),
-            Color.rgb(0xFF, 0x80, 0x80), Color.rgb(0xFF, 0xC0, 0xC0), Color.rgb(0xFF, 0xFF, 0xFF) };
+    private static final int[] COLOR_LIST = { Color.rgb(0x80, 0x00, 0x00), Color.rgb(0xFF, 0x00, 0x00), Color.rgb(0xFF, 0x80, 0x80),
+            Color.rgb(0x00, 0x80, 0x00), Color.rgb(0x00, 0xC0, 0x00), Color.rgb(0x00, 0xFF, 0x00),
+            Color.rgb(0x00, 0x00, 0x80), Color.rgb(0x00, 0x00, 0xFF), Color.rgb(0x00, 0xFF, 0xFF),
+            Color.rgb(0x80, 0x40, 0x00), Color.rgb(0xFF, 0x80, 0x00), Color.rgb(0xFF, 0xC0, 0x80),
+            Color.rgb(0x80, 0x80, 0x00), Color.rgb(0xFF, 0xFF, 0x00), Color.rgb(0xFF, 0xFF, 0x80),
+            Color.rgb(0x40, 0x00, 0x40), Color.rgb(0x80, 0x00, 0x80), Color.rgb(0xFF, 0x00, 0xFF),
+            Color.rgb(0x00, 0x00, 0x00), Color.rgb(0x80, 0x80, 0x80), Color.rgb(0xFF, 0xFF, 0xFF),
+            Color.rgb(0x40, 0x40, 0x40), Color.rgb(0xC0, 0xC0, 0xC0),
+            Color.rgb(0x00, 0x40, 0x00), Color.rgb(0x80, 0xFF, 0x80)};
 
     private int colorCount[] = new int[COLOR_LIST.length];
-    public double barStatus = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,17 +62,33 @@ public class ResultActivity extends AppCompatActivity {
         setContentView(R.layout.activity_result);
         mProgressBar = (ProgressBar)findViewById(R.id.progressBar);
 
-        mImageView = (ImageView)findViewById(R.id.resultImage);
+        if (mProgressBar != null) {
+            mProgressBar.setScaleY(5f);
+            mProgressBar.setScaleX(0.75f);
+        }
+
+        ImageView mImageView = (ImageView) findViewById(R.id.resultImage);
         System.out.println("Getting the cropped picture from " + picture);
 
-        mImageView.setImageURI(picture);
+        if (mImageView != null) {
+            mImageView.setImageURI(picture);
+        }
 
         mTextView = (TextView)findViewById(R.id.colorDataView);
 
-        makePicture getpic = new makePicture();
-// generateColorData(picture);
-        getpic.execute(picture);
+        mRunPicture = new GenerateColorDataAsync();
+        // generateColorData(picture);
+        mRunPicture.execute(picture);
 
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        if (mRunPicture != null)
+            mRunPicture.cancel(true);
+
+        super.onBackPressed();
     }
 
 //    private void generateColorData(Uri pictureToProcess) {
@@ -135,7 +167,10 @@ public class ResultActivity extends AppCompatActivity {
 //
 //}
 
-    class makePicture extends AsyncTask<Uri, Integer, StringBuilder> {
+    class GenerateColorDataAsync extends AsyncTask<Uri, Integer, StringBuilder> {
+
+
+
         @Override
         protected StringBuilder doInBackground(Uri... params) {
 
@@ -209,7 +244,16 @@ public class ResultActivity extends AppCompatActivity {
         protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
 
-            mProgressBar.setProgress(values[0]);
+
+            if (values.length == 2) {
+                double row = values[0];
+                double progress = row / values[1];
+                int update = (int)(progress * 100);
+                System.out.println(update);
+                mProgressBar.setProgress(update);
+            }
+            else
+                mProgressBar.setProgress(0);
 
         }
 
@@ -232,6 +276,8 @@ public class ResultActivity extends AppCompatActivity {
 
                 col++;
                 if (col == width) {
+                    publishProgress(row, height);
+
                     col = 0;
                     row++;
                 }
@@ -239,6 +285,7 @@ public class ResultActivity extends AppCompatActivity {
 
             return result;
         }
+
         private COLORS colorDistanceEnum(int c) {
             double lowest = 442.0;
             int index = 0;
@@ -267,6 +314,88 @@ public class ResultActivity extends AppCompatActivity {
             double blueDiff = Math.pow(Color.blue(c) - b, 2);
 
             return Math.sqrt(redDiff + greenDiff + blueDiff);
+        }
+
+        private COLORS hsbEnum(float[] hsb) {
+
+            if      (hsb[1] < 0.15 && hsb[2] >= 0.65) {
+                colorCount[COLORS.valueOf("WHITE").ordinal()]++;
+                return COLORS.valueOf("WHITE");
+            }
+            else if (hsb[1] < 0.15 && hsb[2] > 0.1 && hsb[2] < 0.65) {
+
+                colorCount[COLORS.valueOf("GREY").ordinal()]++;
+                return COLORS.valueOf("GREY");
+            }
+            else if (hsb[2] < 0.1 ) {
+
+                colorCount[COLORS.valueOf("BLACK").ordinal()]++;
+                return COLORS.valueOf("BLACK");
+            }
+            else {
+                //float deg = hsb[0]*360; //multiply by 360 in regular java, not android
+                float deg = hsb[0];
+                //System.out.println(deg);
+                if      (deg >=   351 && deg <  11 && hsb[1] >= 0.7) {
+                    int index = COLORS.valueOf("RED").ordinal();
+                    colorCount[index]++;
+                    //System.out.println("index: " + index + "  deg between 0 and 30");
+                    return COLORS.valueOf("RED");
+                }
+                else if ((deg >=  351 && deg <  11 && hsb[1] < 0.7) || (deg >= 310 && deg < 351 && hsb[1] > 0.15)) {
+                    colorCount[COLORS.valueOf("PINK").ordinal()]++;
+                    return COLORS.valueOf("PINK");
+                }
+                else if (deg >= 11 && deg < 45 && hsb[1] >= 0.15 && hsb[2] > 0.75) {
+                    colorCount[COLORS.valueOf("ORANGE").ordinal()]++;
+                    return COLORS.valueOf("ORANGE");
+                }
+                else if (deg >= 11 && deg < 45 && hsb[1] >= 0.15 && hsb[2] >= 0.1 && hsb[2] < 0.75) {
+                    colorCount[COLORS.valueOf("BROWN").ordinal()]++;
+                    return COLORS.valueOf("BROWN");
+                }
+                else if (deg >=  45 && deg <  64 && hsb[1] >= 0.15) {
+                    colorCount[COLORS.valueOf("YELLOW").ordinal()]++;
+                    return COLORS.valueOf("YELLOW");
+                }
+                else if (deg >=  64 && deg < 180 && hsb[1] >= 0.15) {
+                    colorCount[COLORS.valueOf("GREEN").ordinal()]++;
+                    return COLORS.valueOf("GREEN");
+                }
+                else if (deg >= 180 && deg < 255 && hsb[1] >= 0.15) {
+                    colorCount[COLORS.valueOf("BLUE").ordinal()]++;
+                    return COLORS.valueOf("BLUE");
+                }
+                else if (deg >= 255 && deg < 310 && hsb[1] >= 0.5) {
+                    colorCount[COLORS.valueOf("PURPLE").ordinal()]++;
+                    return COLORS.valueOf("PURPLE");
+                }
+                else if (deg >= 255 && deg < 310 && hsb[1] >= 0.15 && hsb[1] < 0.5) {
+                    colorCount[COLORS.valueOf("PURPLE").ordinal()]++;
+                    return COLORS.valueOf("PURPLE");
+                }
+                else {
+                    colorCount[COLORS.valueOf("RED").ordinal()]++;
+                    return COLORS.valueOf("RED");
+                }
+            }
+
+        }
+
+        public Bitmap bitmapFromArray(int[][] pixels2d){
+            int width = pixels2d.length;
+            int height = pixels2d[0].length;
+            int[] pixels = new int[width * height];
+            int pixelsIndex = 0;
+            for (int i = 0; i < width; i++)
+            {
+                for (int j = 0; j < height; j++)
+                {
+                    pixels[pixelsIndex] = pixels2d[i][j];
+                    pixelsIndex ++;
+                }
+            }
+            return Bitmap.createBitmap(pixels, width, height, Bitmap.Config.ARGB_8888);
         }
 
 
