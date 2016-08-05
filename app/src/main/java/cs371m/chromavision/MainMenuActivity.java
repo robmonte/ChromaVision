@@ -38,8 +38,6 @@ public class MainMenuActivity extends AppCompatActivity {
     private static final int CAMERA_REQUEST_CODE = 1;
     private static final int GALLERY_REQUEST_CODE = 2;
     private static final int REQUEST_CODE_PERMISSION = 3;
-    //private static final int REQUEST_STORAGE_PERMISSION = 4;
-
     private File storageDir;
 
     @Override
@@ -47,12 +45,19 @@ public class MainMenuActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
 
-        int permissionCheck = ContextCompat.checkSelfPermission(this,
+        int cameraPermissionCheck = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.CAMERA);
+        int storagePermissionCheck = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
-        if (permissionCheck == PackageManager.PERMISSION_DENIED) {
+        Log.d(TAG, Integer.toString(cameraPermissionCheck));
+
+        if (cameraPermissionCheck != PackageManager.PERMISSION_GRANTED || storagePermissionCheck != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
                 Log.d(TAG, "Camera permission denied!");
+            }
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                Log.d(TAG, "Storage permission denied!");
             }
             else {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE_PERMISSION);
@@ -74,7 +79,10 @@ public class MainMenuActivity extends AppCompatActivity {
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
 
-                } else {
+                }
+                else {
+
+                    Log.d(TAG, "Permissions were denied!!");
 
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
@@ -113,27 +121,15 @@ public class MainMenuActivity extends AppCompatActivity {
      **/
     public void takeAPicture(View view) {
 
-//        int cameraCheck = ContextCompat.checkSelfPermission(this,
+//        int permissionCheck = ContextCompat.checkSelfPermission(this,
 //                Manifest.permission.CAMERA);
 //
-//        if (cameraCheck == PackageManager.PERMISSION_DENIED) {
+//        if (permissionCheck == PackageManager.PERMISSION_DENIED) {
 //            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
 //                Log.d(TAG, "Camera permission denied!");
 //            }
 //            else {
-//                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
-//            }
-//        }
-//
-//        int storageCheck = ContextCompat.checkSelfPermission(this,
-//                Manifest.permission.WRITE_EXTERNAL_STORAGE);
-//
-//        if (storageCheck == PackageManager.PERMISSION_DENIED) {
-//            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-//                Log.d(TAG, "Storage permission denied!");
-//            }
-//            else {
-//                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_STORAGE_PERMISSION);
+//                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE_PERMISSION);
 //            }
 //        }
 
@@ -179,6 +175,12 @@ public class MainMenuActivity extends AppCompatActivity {
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), GALLERY_REQUEST_CODE);
     }
+
+//    public void pickFromGallery(View view) {
+////        Intent intent = new Intent();
+//        Intent intent = new Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+//        startActivityForResult(intent, GALLERY_REQUEST_CODE);
+//    }
 
     /**
      * To receive the result from the subsequent activity
