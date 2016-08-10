@@ -3,19 +3,25 @@ package cs371m.chromavision;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.theartofdev.edmodo.cropper.CropImage;
@@ -65,6 +71,62 @@ public class MainMenuActivity extends AppCompatActivity {
         }
 
         storageDir = getAlbumStorageDir("ChromaVision");
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main_menu, menu);
+
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        boolean showWelcome = prefs.getBoolean("ViewedWelcome", false);
+        MenuItem checkWelcome = menu.findItem(R.id.show_welcome_checkbox);
+        checkWelcome.setChecked(!showWelcome);
+
+        boolean hideTutorial = prefs.getBoolean("HideTutorialButton", false);
+        Log.d(TAG, "HideTutorial is " + hideTutorial);
+        MenuItem checkTutorial = menu.findItem(R.id.tutorial_button_checkbox);
+        checkTutorial.setChecked(hideTutorial);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        switch (item.getItemId()) {
+            case R.id.show_welcome_checkbox:
+                boolean showWelcome = prefs.getBoolean("ViewedWelcome", false);
+                editor.putBoolean("ViewedWelcome", !showWelcome);
+                item.setChecked(showWelcome);
+                editor.apply();
+                return true;
+            case R.id.precise_mode_checkbox:
+
+                return true;
+            case R.id.tutorial_button_checkbox:
+                boolean hideTutorial = prefs.getBoolean("HideTutorialButton", true);
+                editor.putBoolean("HideTutorialButton", !hideTutorial);
+                item.setChecked(!hideTutorial);
+                editor.apply();
+                Button tutorialButton = (Button)findViewById(R.id.button4);
+                if (tutorialButton != null) {
+                    if (!hideTutorial)
+                        tutorialButton.setVisibility(View.VISIBLE);
+                    else
+                        tutorialButton.setVisibility(View.GONE);
+                }
+                return true;
+            case R.id.about_menu_button:
+                Intent intent = new Intent(this, AboutActivity.class);
+                startActivity(intent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -346,8 +408,18 @@ public class MainMenuActivity extends AppCompatActivity {
     }
 
     public void tutorial(View view) {
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean("HideTutorialButton", false);
+        editor.apply();
+
         Intent Tutorial = new Intent(this, TutorialActivity.class);
         startActivity(Tutorial);
+
+        Button tutorialButton = (Button)findViewById(R.id.button4);
+        if (tutorialButton != null) {
+            tutorialButton.setVisibility(View.GONE);
+        }
     }
 
     public void openFolder(View view) {

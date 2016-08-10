@@ -1,0 +1,18 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/precise_mode_checkbox"
+        android:checkable="true"
+        android:orderInCategory="1"
+        android:title="Precise mode" />
+    <item android:id="@+id/show_welcome_checkbox"
+        android:title="Show welcome"
+        android:checkable="true"
+        android:orderInCategory="2" />
+        <!--android:icon="@drawable/new_game"/>-->
+    <item android:id="@+id/tutorial_button_checkbox"
+        android:checkable="true"
+        android:orderInCategory="3"
+        android:title="Show tutorial" />
+    <item android:id="@+id/about_menu_button"
+        android:title="About"
+        android:orderInCategory="4" />
+</menu>

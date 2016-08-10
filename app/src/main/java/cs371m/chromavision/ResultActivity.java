@@ -202,25 +202,20 @@ public class ResultActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-            System.out.println("test1");
-            publishProgress(25);
             Bitmap image = BitmapFactory.decodeStream(cameraInput);
-            System.out.println("test2");
-            publishProgress(50);
+
             String[][] colors = new String[image.getHeight()][image.getWidth()];
-            System.out.println("test3");
 
-
-            int[][] result = determineColors(image, colors);
+            determineColors(image, colors);
             int[][] newPicture = new int[height][width];
 
             for (int i=0; i<colors.length; i++) {
                 for (int j=0; j<colors[i].length; j++) {
-                    String name = colors[i][j];
+                    //String name = colors[i][j];
 
-                    int index = COLORS.valueOf(name).ordinal();
+                    //int index = COLORS.valueOf(name).ordinal();
 
-                    newPicture[i][j] = COLOR_LIST[index];
+                    newPicture[i][j] = COLOR_LIST[COLORS.valueOf(colors[i][j]).ordinal()];
                 }
             }
 
@@ -240,6 +235,7 @@ public class ResultActivity extends AppCompatActivity {
             }
 
             testOut.compress(Bitmap.CompressFormat.JPEG, 100, fOut); // saving the Bitmap to a file compressed as a JPEG with 100% compression rate
+
             try {
                 if (fOut != null) {
                     fOut.flush();
@@ -250,12 +246,6 @@ public class ResultActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-
-
-
-            publishProgress(75);
-            System.out.println("test4");
-            publishProgress(100);
             System.out.println(Arrays.toString(colorCount));
 
             double imageSize = width * height;
@@ -320,7 +310,7 @@ public class ResultActivity extends AppCompatActivity {
             return file;
         }
 
-        private int[][] determineColors(Bitmap image, String[][] colors) {
+        private void determineColors(Bitmap image, String[][] colors) {
 
             int width = image.getWidth();
             int height = image.getHeight();
@@ -336,7 +326,6 @@ public class ResultActivity extends AppCompatActivity {
                 int c = pixels[pixel];
 
                 float hsv[] = new float[3];
-
                 Color.RGBToHSV(Color.red(c), Color.green(c), Color.blue(c), hsv);
 
                 //colors[row][col] = colorDistanceEnum(c).toString();
@@ -353,8 +342,6 @@ public class ResultActivity extends AppCompatActivity {
                     row++;
                 }
             }
-
-            return result;
         }
 
 //        private COLORS colorDistanceEnum(int c) {
@@ -405,7 +392,7 @@ public class ResultActivity extends AppCompatActivity {
                 colorCount[COLORS.valueOf("WHITE").ordinal()]++;
                 return COLORS.valueOf("WHITE");
             }
-            else if ((hsb[1] < 0.15 && hsb[2] >= 0.1 && hsb[2] < 0.66) || ((deg < 64 || deg >= 180) && hsb[1] < 0.2)) {
+            else if ((hsb[1] < 0.15 && hsb[2] >= 0.1 && hsb[2] < 0.66) || ((deg < 64 || deg >= 180) && hsb[1] < 0.15)) {
                 // Grey
                 colorCount[COLORS.valueOf("GREY").ordinal()]++;
                 return COLORS.valueOf("GREY");
@@ -413,12 +400,12 @@ public class ResultActivity extends AppCompatActivity {
             else {
                 //System.out.println(deg);
                 if (deg >= 335 || deg <  11) {
-                    if (deg < 350 && hsb[1] < 0.65 && hsb[2] >= 0.5) {
+                    if (deg < 350 && deg > 11 && hsb[1] < 0.65 && hsb[2] >= 0.5) {
                         // Pink
                         colorCount[COLORS.valueOf("PINK").ordinal()]++;
                         return COLORS.valueOf("PINK");
                     }
-                    else if (hsb[1] >= 0.8) {
+                    else if (hsb[1] >= 0.8 || (deg >= 0 && hsb[1] >= 0.5)) {
                         // Red
                         colorCount[COLORS.valueOf("RED").ordinal()]++;
                         return COLORS.valueOf("RED");
@@ -467,24 +454,16 @@ public class ResultActivity extends AppCompatActivity {
                     }
                 }
                 else if (deg >=  70 && deg < 178) {
-                    if (hsb[2] < 0.9) {
-                        if (deg < 165 && hsb[1] >= 0.5 && hsb[2] > 0.4) {
-                            // Green
-                            colorCount[COLORS.valueOf("GREEN").ordinal()]++;
-                            return COLORS.valueOf("GREEN");
-                        }
-                        else {
-                            // Green
-                            colorCount[COLORS.valueOf("BLUE").ordinal()]++;
-                            return COLORS.valueOf("BLUE");
-                        }
+                    if (deg < 170 || (hsb[1] >= 0.5 && hsb[2] > 0.4)) {
+                        // Green
+                        colorCount[COLORS.valueOf("GREEN").ordinal()]++;
+                        return COLORS.valueOf("GREEN");
                     }
                     else {
                         // Blue
                         colorCount[COLORS.valueOf("BLUE").ordinal()]++;
                         return COLORS.valueOf("BLUE");
                     }
-
                 }
                 else if (deg >= 178 && deg < 255) {
                     if (hsb[2] >= 0.5) {
@@ -516,7 +495,7 @@ public class ResultActivity extends AppCompatActivity {
                     }
                 }
                 else if (deg >= 310 && deg < 335) {
-                    if ((hsb[1] < 0.5 && hsb[2] >= 0.55) || (hsb[1] >= 0.70 && hsb[2] >= 0.75) || (hsb[1] >= 0.5 && hsb[2] >= 0.65)) {
+                    if ((hsb[1] < 0.5 && hsb[2] >= 0.75) || (hsb[1] >= 0.70 && hsb[2] >= 0.75) || (hsb[1] >= 0.5 && hsb[2] >= 0.65)) {
                         // Pink
                         colorCount[COLORS.valueOf("PINK").ordinal()]++;
                         return COLORS.valueOf("PINK");
