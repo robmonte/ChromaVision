@@ -207,44 +207,45 @@ public class ResultActivity extends AppCompatActivity {
             String[][] colors = new String[image.getHeight()][image.getWidth()];
 
             determineColors(image, colors);
-            int[][] newPicture = new int[height][width];
 
-            for (int i=0; i<colors.length; i++) {
-                for (int j=0; j<colors[i].length; j++) {
-                    //String name = colors[i][j];
+//            int[][] newPicture = new int[height][width];
+//
+//            for (int i=0; i<colors.length; i++) {
+//                for (int j=0; j<colors[i].length; j++) {
+//                    //String name = colors[i][j];
+//
+//                    //int index = COLORS.valueOf(name).ordinal();
+//
+//                    newPicture[i][j] = COLOR_LIST[COLORS.valueOf(colors[i][j]).ordinal()];
+//                }
+//            }
 
-                    //int index = COLORS.valueOf(name).ordinal();
+            //Bitmap testOut = bitmapFromArray(newPicture);
 
-                    newPicture[i][j] = COLOR_LIST[COLORS.valueOf(colors[i][j]).ordinal()];
-                }
-            }
+//            File storageDir = getAlbumStorageDir("ChromaVisionDebug");
+//
+//            Locale mylocale = new Locale("en");
+//            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", mylocale).format(new Date());
+            //File file = new File(storageDir, "testColors" + timeStamp + ".jpg"); // the File to save to
+            //OutputStream fOut = null;
 
-            Bitmap testOut = bitmapFromArray(newPicture);
+//            try {
+//                fOut = new FileOutputStream(file);
+//            } catch (FileNotFoundException e) {
+//                e.printStackTrace();
+//            }
 
-            File storageDir = getAlbumStorageDir("ChromaVisionDebug");
+            //testOut.compress(Bitmap.CompressFormat.JPEG, 100, fOut); // saving the Bitmap to a file compressed as a JPEG with 100% compression rate
 
-            Locale mylocale = new Locale("en");
-            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", mylocale).format(new Date());
-            File file = new File(storageDir, "testColors" + timeStamp + ".jpg"); // the File to save to
-            OutputStream fOut = null;
-
-            try {
-                fOut = new FileOutputStream(file);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-
-            testOut.compress(Bitmap.CompressFormat.JPEG, 100, fOut); // saving the Bitmap to a file compressed as a JPEG with 100% compression rate
-
-            try {
-                if (fOut != null) {
-                    fOut.flush();
-                    fOut.close();
-                }
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-            }
+//            try {
+//                if (fOut != null) {
+//                    fOut.flush();
+//                    fOut.close();
+//                }
+//            }
+//            catch (IOException e) {
+//                e.printStackTrace();
+//            }
 
             System.out.println(Arrays.toString(colorCount));
 

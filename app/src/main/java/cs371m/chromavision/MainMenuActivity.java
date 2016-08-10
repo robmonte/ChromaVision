@@ -279,7 +279,8 @@ public class MainMenuActivity extends AppCompatActivity {
 
                 try {
                     fOut = new FileOutputStream(file);
-                } catch (FileNotFoundException e) {
+                }
+                catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
 
@@ -287,12 +288,13 @@ public class MainMenuActivity extends AppCompatActivity {
                 try {
                     fOut.flush();
                     fOut.close();
-                } catch (IOException e) {
+                }
+                catch (IOException e) {
                     e.printStackTrace();
                 }
 
-                Uri fileUri = android.net.Uri.parse(file.toURI().toString());
 
+                Uri fileUri = android.net.Uri.parse(file.toURI().toString());
 
                 System.out.println("pictureCrop is " + fileUri.toString());
                 Intent cropped = new Intent(this, ResultActivity.class);
@@ -303,7 +305,8 @@ public class MainMenuActivity extends AppCompatActivity {
 
                 startActivity(cropped);
 
-            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+            }
+            else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception error = result.getError();
                 error.printStackTrace();
             }
@@ -323,12 +326,20 @@ public class MainMenuActivity extends AppCompatActivity {
                     System.out.println("Inside GALLERY_REQUEST_CODE");
 
                     // Get the image from data
-                    Uri selectedImage = data.getData();
+                    Uri selectedImage = null;
+                    if (data != null) {
+                        selectedImage = data.getData();
+                    }
 
                     System.out.println("selectedImage URI: " + selectedImage);
-                    System.out.println("selectedImage toString: " + selectedImage.toString());
+                    if (selectedImage != null) {
+                        System.out.println("selectedImage toString: " + selectedImage.toString());
+                    }
 
-                    InputStream galleryInput = getContentResolver().openInputStream(selectedImage);
+                    InputStream galleryInput = null;
+                    if (selectedImage != null) {
+                        galleryInput = getContentResolver().openInputStream(selectedImage);
+                    }
                     Bitmap scale = BitmapFactory.decodeStream(galleryInput);
 
                     scale = resizeImageToScreen(scale);
@@ -354,10 +365,12 @@ public class MainMenuActivity extends AppCompatActivity {
                     resultIntent.putExtra("width", scale.getWidth());
                     resultIntent.putExtra("height", scale.getHeight());
                     startActivityForResult(resultIntent, GALLERY_REQUEST_CODE);
-                } else if (resultCode == RESULT_CANCELED) {
+                }
+                else if (resultCode == RESULT_CANCELED) {
                     // User cancelled the image capture
 
-                } else {
+                }
+                else {
                     // Image capture failed, advise user
 
                 }
