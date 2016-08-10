@@ -1,6 +1,9 @@
 package cs371m.chromavision;
 
+import android.app.FragmentManager;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -8,26 +11,41 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Random;
+import java.util.Scanner;
 
 public class ResultActivity extends AppCompatActivity {
 
@@ -37,6 +55,11 @@ public class ResultActivity extends AppCompatActivity {
     private ProgressBar mProgressBar;
     private GenerateColorDataAsync mRunPicture;
     private Bitmap bitmap;
+    private String resultPicture;
+    private String fileName;
+    private Integer saved;
+    private EditText input;
+    private FileInputStream fis;
 
 //    private enum COLORS { BLACK, VERY_DARK_RED, DARK_RED, MEDIUM_RED, BRIGHT_RED, PALE_RED, LIGHT_RED, VERY_LIGHT_RED, WHITE }
 //
@@ -99,7 +122,6 @@ public class ResultActivity extends AppCompatActivity {
 
 
 
-
                     }
                     else {
                         int pixel = bitmap.getPixel(x, y);
@@ -135,11 +157,6 @@ public class ResultActivity extends AppCompatActivity {
 
     }
 
-   // final ImageView mImageView = (ImageView) findViewById(R.id.resultImage);
-
-
-
-
     @Override
     public void onBackPressed()
     {
@@ -148,6 +165,122 @@ public class ResultActivity extends AppCompatActivity {
 
         super.onBackPressed();
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        saved = 0;
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_result_page, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        ScrollView resultString = (ScrollView) findViewById(R.id.resultString);
+        if (item.getItemId() == R.id.save)
+            nameFile(resultString);
+        return true;
+    }
+
+    protected void nameFile(View v) {
+
+//
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setIcon(R.mipmap.ic_launcher);
+        builder.setMessage("Please set a file name:")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int id) {
+
+                        Toast.makeText(getApplicationContext(),
+                                "YOU DID!",Toast.LENGTH_LONG).show();
+                        fileName = input.getText().toString();
+                        saveFile();
+                    }
+                })
+                .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int id) {
+
+                        // User cancelled the dialog
+                        Toast.makeText(getApplicationContext(),
+                                "YOU CANCELED THE STORAGE!",Toast.LENGTH_LONG).show();
+                    }
+                });
+
+        // Create the AlertDialog object and return it
+        AlertDialog fname = builder.create();
+        input = new EditText(this);
+        fname.setView(input);
+        fname.show();
+
+    }
+
+
+
+    private void saveFile() {
+//        System.out.println("in saveFile");
+        if (saved == 0) {
+            System.out.println("Are you actually saving file?");
+            System.out.println(fileName);
+            try {
+                FileOutputStream fos
+                        = openFileOutput(fileName, MODE_PRIVATE);
+
+                PrintStream writer = new PrintStream(fos);
+//            Random r = new Random();
+                writer.println(resultPicture);
+                System.out.println(resultPicture);
+                writer.close();
+                fis = openFileInput(fileName);
+
+
+//                    System.out.println(fis.toString());
+//                    String content = new Scanner(new File(fileName)).useDelimiter("\\Z").next();
+//                    System.out.println(content);
+//                    System.out.println(uri + "");
+                saved = 1;
+
+            } catch (FileNotFoundException e) {
+                Log.d(TAG, "Exception trying to open file: " + e);
+            }
+
+            try {
+                Uri uri = Uri.fromFile(new File(fileName));
+                BufferedReader reader;
+                reader = new BufferedReader(new InputStreamReader(fis));
+                System.out.println("Reading File line by line using Bufferreader");
+                String line = reader.readLine();
+
+                while (line != null) {
+                    System.out.println(line);
+                    line = reader.readLine();
+                }
+
+            }
+            catch (IOException e)
+            {
+                ;
+            }
+//
+
+        }
+    }
+
+
+
+//        try {
+//            String content = new Scanner(new File(name)).useDelimiter("\\Z").next();
+//            System.out.println(content);
+//
+//        }
+//        catch(FileNotFoundException e1) {
+//            Log.d(TAG, "Exception trying to read file: " + e1);
+//        }
+
 
 //    private void generateColorData(Uri pictureToProcess) {
 //        InputStream cameraInput = null;
@@ -316,7 +449,7 @@ public class ResultActivity extends AppCompatActivity {
             }
 
 
-
+            resultPicture = output.toString();
             return output;
 
 

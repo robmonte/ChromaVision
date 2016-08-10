@@ -474,9 +474,7 @@ public class MainMenuActivity extends AppCompatActivity {
     }
 
     public void openFolder(View view) {
-        Uri selectedUri = Uri.parse(getFilesDir() + "");
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setDataAndType(selectedUri, "*/jpg");
+        Intent intent = new Intent(this, FileListActivity.class);
         startActivity(intent);
     }
 

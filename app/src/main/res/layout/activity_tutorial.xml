@@ -26,7 +26,7 @@
                 android:layout_margin="5dp"
                 android:text="CAPTURE A NEW PICTURE"
                 android:textStyle="bold"
-                android:textSize="25sp"
+                android:textSize="23sp"
                 android:textColor="#000000"
                 />
 
@@ -38,7 +38,7 @@
                 android:text="Click on 'CAPTURE A NEW PICTURE' to use the camera on your phone to take a picture with your phone. After confirmed your picture, you will be given the option to crop the photo if you would like. The cropped photo will be saved into the device's external storage directory's Pictures folder in a custom folder named ChromaVision."
                 android:layout_margin="5dp"
                 android:layout_below="@id/capturePic"
-                android:textSize="22sp"
+                android:textSize="18sp"
                 />
 
 
@@ -62,7 +62,7 @@
                 android:layout_height="wrap_content"
                 android:text="If you have a photo that you already have stored on your phone and would like to use the ChromaVision software on, you can click on the 'OPEN IMAGE FROM GALLERY' button. Here you will be able to select the image from your gallery app that will then load it into ChromaVision to be analyzed."
                 android:layout_below="@id/OpenImage"
-                android:textSize="20sp"
+                android:textSize="18sp"
 
                 />
 
@@ -74,7 +74,7 @@
                 android:text="\nLOAD LAST IMAGE"
                 android:textStyle="bold"
                 android:layout_below="@id/tutorial2"
-                android:textSize="25sp"
+                android:textSize="23sp"
                 android:textColor="#000000"
 
                 />
@@ -85,7 +85,7 @@
                 android:layout_height="wrap_content"
 
                 android:text="To review photos that have already been processed through the ChormaVision simply click on 'LOAD PAST IMAGE DATA'. This will bring up a file explorer showing all saved and named past runs of images you have processed."
-                android:textSize="20sp"
+                android:textSize="18sp"
                 android:layout_below="@id/LoadLast"
                 />
 
