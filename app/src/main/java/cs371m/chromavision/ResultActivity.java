@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -90,30 +91,32 @@ public class ResultActivity extends AppCompatActivity {
 
                 if (motionEvent.getAction() == MotionEvent.ACTION_DOWN || motionEvent.getAction() == MotionEvent.ACTION_MOVE){
 
+                    int x = (int)motionEvent.getX();
+                    int y = (int)motionEvent.getY();
+
                     bitmap = mImageView.getDrawingCache();
-                    if((int)motionEvent.getY()<0||(int)motionEvent.getX()<0){
+                    if(y < 0 || x < 0 || y > bitmap.getHeight() || x > bitmap.getWidth()) {
 
 
 
 
                     }
                     else {
-                        if(motionEvent.getY()>bitmap.getHeight()){
+                        int pixel = bitmap.getPixel(x, y);
+                        int redValue = Color.red(pixel);
+                        int blueValue = Color.blue(pixel);
+                        int greenValue = Color.green(pixel);
+                        //System.out.println();
 
-
-                        }
-                        else {
-                            int pixel = bitmap.getPixel((int) motionEvent.getX(), (int) motionEvent.getY());
-                            int redValue = Color.red(pixel);
-                            int blueValue = Color.blue(pixel);
-                            int greenValue = Color.green(pixel);
-                            //System.out.println();
-
-                            TextView textstuff = (TextView) findViewById(R.id.clickPixel);
-                            textstuff.setBackgroundColor(Color.rgb(redValue, greenValue, blueValue));
-                            System.out.println((int) motionEvent.getX() + " , " + (int) motionEvent.getY());
-                            System.out.println("red =" + redValue + "blue = " + blueValue + "green = " + greenValue);
-                        }
+                        TextView clickPixelBackground = (TextView) findViewById(R.id.clickPixel);
+                        TextView clickPixelLocation = (TextView) findViewById(R.id.clickPixelText);
+                        LinearLayout border = (LinearLayout) findViewById(R.id.clickPixelBorder);
+                        border.setBackgroundColor(Color.BLACK);
+                        clickPixelBackground.setBackgroundColor(Color.rgb(redValue, greenValue, blueValue));
+                        System.out.println(x + " , " + y);
+                        System.out.println("red =" + redValue + "blue = " + blueValue + "green = " + greenValue);
+                        String loc = "(" + x + ", " + y + "): ";
+                        clickPixelLocation.setText(loc);
                     }
                 }
                 return true;
@@ -363,7 +366,7 @@ public class ResultActivity extends AppCompatActivity {
             image.getPixels(pixels, 0, width, 0, 0, width, height);
 
 
-            int[][] result = new int[height][width];
+            //int[][] result = new int[height][width];
 
             for (int pixel=0, row=0, col=0; pixel<pixels.length; pixel++) {
                 int c = pixels[pixel];
@@ -374,8 +377,8 @@ public class ResultActivity extends AppCompatActivity {
                 //colors[row][col] = colorDistanceEnum(c).toString();
                 colors[row][col] = hsbEnum(hsv).toString();
 
-                int index = COLORS.valueOf(colors[row][col]).ordinal();
-                result[row][col] = COLOR_LIST[index];
+                //int index = COLORS.valueOf(colors[row][col]).ordinal();
+                //result[row][col] = COLOR_LIST[index];
 
                 col++;
                 if (col == width) {
@@ -435,7 +438,7 @@ public class ResultActivity extends AppCompatActivity {
                 colorCount[COLORS.valueOf("WHITE").ordinal()]++;
                 return COLORS.valueOf("WHITE");
             }
-            else if ((hsb[1] < 0.15 && hsb[2] >= 0.1 && hsb[2] < 0.66) || ((deg < 64 || deg >= 180) && hsb[1] < 0.15)) {
+            else if ((hsb[1] < 0.15 && hsb[2] >= 0.1 && hsb[2] < 0.75) || (hsb[1] < 0.4 && hsb[2] < 0.2) || ((deg < 64 || deg >= 180) && hsb[1] < 0.15)) {
                 // Grey
                 colorCount[COLORS.valueOf("GREY").ordinal()]++;
                 return COLORS.valueOf("GREY");
@@ -448,29 +451,34 @@ public class ResultActivity extends AppCompatActivity {
                         colorCount[COLORS.valueOf("PINK").ordinal()]++;
                         return COLORS.valueOf("PINK");
                     }
-                    else if (hsb[1] >= 0.8 || (deg >= 0 && hsb[1] >= 0.5)) {
+                    else /*if (hsb[1] >= 0.8 || (deg >= 0 && hsb[1] >= 0.5))*/ {
                         // Red
                         colorCount[COLORS.valueOf("RED").ordinal()]++;
                         return COLORS.valueOf("RED");
                     }
-                    else {
-                        // Dark Red
-                        colorCount[COLORS.valueOf("DARK_RED").ordinal()]++;
-                        return COLORS.valueOf("DARK_RED");
-                    }
+//                else {
+//                    // Dark Red
+//                    colorCount[COLORS.valueOf("DARK_RED").ordinal()]++;
+//                    return COLORS.valueOf("DARK_RED");
+//                }
                 }
                 else if (deg >= 11 && deg < 45) {
-                    if ((hsb[1] >= 0.8 && hsb[2] >= 0.60)) {
+                    if ((hsb[1] >= 0.8 || hsb[1] > 0.5 && hsb[2] > 0.7 || hsb[2] > 0.85 /*&& hsb[2] >= 0.60*/)) {
                         // Orange
                         colorCount[COLORS.valueOf("ORANGE").ordinal()]++;
                         return COLORS.valueOf("ORANGE");
                     }
-                    else if ((hsb[2] >= 0.75)) {
-                        // Light Orange
-                        colorCount[COLORS.valueOf("LIGHT_ORANGE").ordinal()]++;
-                        return COLORS.valueOf("LIGHT_ORANGE");
-                    }
+//                else if ((hsb[2] >= 0.75)) {
+//                    // Light Orange
+//                    colorCount[COLORS.valueOf("LIGHT_ORANGE").ordinal()]++;
+//                    return COLORS.valueOf("LIGHT_ORANGE");
+//                }
                     else {
+                        if (hsb[1] < 0.4 && hsb[2] < 0.9) {
+                            // Grey
+                            colorCount[COLORS.valueOf("GREY").ordinal()]++;
+                            return COLORS.valueOf("GREY");
+                        }
                         // Brown
                         colorCount[COLORS.valueOf("BROWN").ordinal()]++;
                         return COLORS.valueOf("BROWN");
@@ -484,6 +492,10 @@ public class ResultActivity extends AppCompatActivity {
                         if (hsb[1] < 0.25 && hsb[2] < 0.35) {
                             colorCount[COLORS.valueOf("BLUE").ordinal()]++;
                             return COLORS.valueOf("BLUE");
+                        }
+                        else if (hsb[1] < 0.3 && hsb[2] < 0.85) {
+                            colorCount[COLORS.valueOf("GREY").ordinal()]++;
+                            return COLORS.valueOf("GREY");
                         }
                         else {
                             // Yellow

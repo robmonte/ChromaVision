@@ -46,6 +46,8 @@ public class MainMenuActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_PERMISSION = 3;
     private File storageDir;
 
+    private Uri mCameraImageUri;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -211,10 +213,14 @@ public class MainMenuActivity extends AppCompatActivity {
 
             Log.d(TAG, "takeAPicture: " + photoUri.toString());
 
-            CropImage.activity(photoUri).setGuidelines(CropImageView.Guidelines.ON).start(this);
+            mCameraImageUri = photoUri;
+
+            //CropImage.activity(photoUri).setGuidelines(CropImageView.Guidelines.ON).start(this);
 
             intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
             startActivityForResult(intent, CAMERA_REQUEST_CODE);
+
+
         }
     }
 
@@ -235,7 +241,11 @@ public class MainMenuActivity extends AppCompatActivity {
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
+
+        System.out.println("choosing");
+
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), GALLERY_REQUEST_CODE);
+
     }
 
 //    public void pickFromGallery(View view) {
@@ -268,6 +278,13 @@ public class MainMenuActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 Bitmap scale = BitmapFactory.decodeStream(cameraInput);
+
+                System.out.println(croppedImage);
+
+                File delete = new File(croppedImage.toString());
+                if (delete.exists())
+                    System.out.println("it exists!!!");
+                delete.delete();
 
                 scale = resizeImageToScreen(scale);
 
@@ -321,8 +338,14 @@ public class MainMenuActivity extends AppCompatActivity {
                 // Check which request we're responding to
                 if (requestCode == CAMERA_REQUEST_CODE) {
                     //galleryAddPic();
+                    System.out.println("Inside CAMERA_REQUEST_CODE");
 
-                } else if (requestCode == GALLERY_REQUEST_CODE) {
+                    System.out.println(mCameraImageUri);
+
+                    CropImage.activity(mCameraImageUri).setGuidelines(CropImageView.Guidelines.ON).start(this);
+
+                }
+                else if (requestCode == GALLERY_REQUEST_CODE) {
                     System.out.println("Inside GALLERY_REQUEST_CODE");
 
                     // Get the image from data
@@ -332,14 +355,16 @@ public class MainMenuActivity extends AppCompatActivity {
                     }
 
                     System.out.println("selectedImage URI: " + selectedImage);
-                    if (selectedImage != null) {
-                        System.out.println("selectedImage toString: " + selectedImage.toString());
-                    }
+
+                    CropImage.activity(selectedImage).setGuidelines(CropImageView.Guidelines.ON).start(this);
+
+
 
                     InputStream galleryInput = null;
                     if (selectedImage != null) {
                         galleryInput = getContentResolver().openInputStream(selectedImage);
                     }
+
                     Bitmap scale = BitmapFactory.decodeStream(galleryInput);
 
                     scale = resizeImageToScreen(scale);
@@ -364,7 +389,7 @@ public class MainMenuActivity extends AppCompatActivity {
                     resultIntent.putExtra("pictureUri", fileUri);
                     resultIntent.putExtra("width", scale.getWidth());
                     resultIntent.putExtra("height", scale.getHeight());
-                    startActivityForResult(resultIntent, GALLERY_REQUEST_CODE);
+                    //startActivityForResult(resultIntent, GALLERY_REQUEST_CODE);
                 }
                 else if (resultCode == RESULT_CANCELED) {
                     // User cancelled the image capture
