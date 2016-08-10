@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -34,7 +35,7 @@ public class ResultActivity extends AppCompatActivity {
     private TextView mTextView;
     private ProgressBar mProgressBar;
     private GenerateColorDataAsync mRunPicture;
-
+    private Bitmap bitmap;
 
 //    private enum COLORS { BLACK, VERY_DARK_RED, DARK_RED, MEDIUM_RED, BRIGHT_RED, PALE_RED, LIGHT_RED, VERY_LIGHT_RED, WHITE }
 //
@@ -80,9 +81,45 @@ public class ResultActivity extends AppCompatActivity {
             mProgressBar.setScaleX(0.75f);
         }
 
-        ImageView mImageView = (ImageView) findViewById(R.id.resultImage);
+       final ImageView mImageView = (ImageView) findViewById(R.id.resultImage);
         System.out.println("Getting the cropped picture from " + picture);
+        mImageView.setDrawingCacheEnabled(true);
+        mImageView.setOnTouchListener( new View.OnTouchListener(){
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent){
 
+                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN || motionEvent.getAction() == MotionEvent.ACTION_MOVE){
+
+                    bitmap = mImageView.getDrawingCache();
+                    if((int)motionEvent.getY()<0||(int)motionEvent.getX()<0){
+
+
+
+
+                    }
+                    else {
+                        if(motionEvent.getY()>bitmap.getHeight()){
+
+
+                        }
+                        else {
+                            int pixel = bitmap.getPixel((int) motionEvent.getX(), (int) motionEvent.getY());
+                            int redValue = Color.red(pixel);
+                            int blueValue = Color.blue(pixel);
+                            int greenValue = Color.green(pixel);
+                            //System.out.println();
+
+                            TextView textstuff = (TextView) findViewById(R.id.clickPixel);
+                            textstuff.setBackgroundColor(Color.rgb(redValue, greenValue, blueValue));
+                            System.out.println((int) motionEvent.getX() + " , " + (int) motionEvent.getY());
+                            System.out.println("red =" + redValue + "blue = " + blueValue + "green = " + greenValue);
+                        }
+                    }
+                }
+                return true;
+            }
+
+        });
         if (mImageView != null) {
             mImageView.setImageURI(picture);
         }
@@ -94,6 +131,11 @@ public class ResultActivity extends AppCompatActivity {
         mRunPicture.execute(picture);
 
     }
+
+   // final ImageView mImageView = (ImageView) findViewById(R.id.resultImage);
+
+
+
 
     @Override
     public void onBackPressed()
