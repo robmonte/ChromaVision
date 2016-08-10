@@ -45,8 +45,8 @@ public class MainMenuActivity extends AppCompatActivity {
     private static final int GALLERY_REQUEST_CODE = 2;
     private static final int REQUEST_CODE_PERMISSION = 3;
     private File storageDir;
-
     private Uri mCameraImageUri;
+    private MenuItem mTutorialMenuItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +72,16 @@ public class MainMenuActivity extends AppCompatActivity {
             }
         }
 
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean hideTutorial = prefs.getBoolean("ViewedTutorial", false);
+        System.out.println("hide tutorial is " + hideTutorial);
+        if (hideTutorial) {
+            Button tutorialButton = (Button)findViewById(R.id.button4);
+            if (tutorialButton != null) {
+                tutorialButton.setVisibility(View.GONE);
+            }
+        }
+
         storageDir = getAlbumStorageDir("ChromaVision");
     }
 
@@ -86,10 +96,11 @@ public class MainMenuActivity extends AppCompatActivity {
         MenuItem checkWelcome = menu.findItem(R.id.show_welcome_checkbox);
         checkWelcome.setChecked(!showWelcome);
 
-        boolean hideTutorial = prefs.getBoolean("HideTutorialButton", false);
-        Log.d(TAG, "HideTutorial is " + hideTutorial);
+        boolean showTutorial = prefs.getBoolean("ViewedTutorial", false);
+        Log.d(TAG, "HideTutorial is " + showTutorial);
         MenuItem checkTutorial = menu.findItem(R.id.tutorial_button_checkbox);
-        checkTutorial.setChecked(hideTutorial);
+        mTutorialMenuItem = checkTutorial;
+        checkTutorial.setChecked(!showTutorial);
 
         return true;
     }
@@ -102,21 +113,22 @@ public class MainMenuActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.show_welcome_checkbox:
                 boolean showWelcome = prefs.getBoolean("ViewedWelcome", false);
-                editor.putBoolean("ViewedWelcome", !showWelcome);
                 item.setChecked(showWelcome);
+                editor.putBoolean("ViewedWelcome", !showWelcome);
                 editor.apply();
                 return true;
             case R.id.precise_mode_checkbox:
 
                 return true;
             case R.id.tutorial_button_checkbox:
-                boolean hideTutorial = prefs.getBoolean("HideTutorialButton", true);
-                editor.putBoolean("HideTutorialButton", !hideTutorial);
-                item.setChecked(!hideTutorial);
+                boolean hideTutorial = prefs.getBoolean("ViewedTutorial", false);
+                item.setChecked(hideTutorial);
+                editor.putBoolean("ViewedTutorial", !hideTutorial);
+                System.out.println("on select, hidetutorial is " + hideTutorial);
                 editor.apply();
                 Button tutorialButton = (Button)findViewById(R.id.button4);
                 if (tutorialButton != null) {
-                    if (!hideTutorial)
+                    if (hideTutorial)
                         tutorialButton.setVisibility(View.VISIBLE);
                     else
                         tutorialButton.setVisibility(View.GONE);
@@ -171,7 +183,7 @@ public class MainMenuActivity extends AppCompatActivity {
         // get the local time presentation
         Locale mylocale = new Locale("en");
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", mylocale).format(new Date());
-        String imageFileName = "temp" + timeStamp;
+        String imageFileName = "cameraTemp" + timeStamp;
 
         storageDir = getAlbumStorageDir("ChromaVision");
         return File.createTempFile(imageFileName, ".jpg", storageDir);
@@ -281,7 +293,7 @@ public class MainMenuActivity extends AppCompatActivity {
 
                 System.out.println(croppedImage);
 
-                File delete = new File(croppedImage.toString());
+                File delete = new File(croppedImage.getPath());
                 if (delete.exists())
                     System.out.println("it exists!!!");
                 delete.delete();
@@ -448,7 +460,7 @@ public class MainMenuActivity extends AppCompatActivity {
     public void tutorial(View view) {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putBoolean("HideTutorialButton", false);
+        editor.putBoolean("ViewedTutorial", true);
         editor.apply();
 
         Intent Tutorial = new Intent(this, TutorialActivity.class);
@@ -457,6 +469,7 @@ public class MainMenuActivity extends AppCompatActivity {
         Button tutorialButton = (Button)findViewById(R.id.button4);
         if (tutorialButton != null) {
             tutorialButton.setVisibility(View.GONE);
+            mTutorialMenuItem.setChecked(false);
         }
     }
 

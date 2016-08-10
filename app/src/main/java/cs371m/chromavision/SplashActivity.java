@@ -37,8 +37,8 @@ public class SplashActivity extends AppCompatActivity {
                 public void onClick(DialogInterface dialog, int which) {
                     SharedPreferences.Editor editor = prefs.edit();
                     editor.putBoolean("ViewedWelcome", true);
-                    if (!prefs.contains("HideTutorialButton"))
-                        editor.putBoolean("HideTutorialButton", true);
+                    if (!prefs.contains("ViewedTutorial"))
+                        editor.putBoolean("ViewedTutorial", false);
                     if (!prefs.contains("PreciseMode"))
                         editor.putBoolean("PreciseMode", true);
 

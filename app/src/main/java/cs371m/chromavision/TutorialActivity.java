@@ -17,9 +17,9 @@ public class TutorialActivity extends AppCompatActivity {
 
 //        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 //        SharedPreferences.Editor editor = prefs.edit();
-//        editor.putBoolean("HideTutorialButton", false);
+//        editor.putBoolean("ViewedTutorial", false);
 //        editor.apply();
 
-//        Log.d(TAG, "HideTutorialButton is now " + prefs.getBoolean("HideTutorialButton", false));
+//        Log.d(TAG, "ViewedTutorial is now " + prefs.getBoolean("ViewedTutorial", false));
     }
 }
