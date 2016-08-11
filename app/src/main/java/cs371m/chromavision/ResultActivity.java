@@ -143,7 +143,7 @@ public class ResultActivity extends AppCompatActivity {
                        // clickPixelLocation.setText(loc);
                         float [] Hsb = new float[3];
                         Color.RGBToHSV(redValue,greenValue,blueValue, Hsb);
-                        String loc = "(" + x + ", " + y + ") is: " + getTouchedColor(Hsb).toString();
+                        String loc = "(" + x + ", " + y + ") is " + getTouchedColor(Hsb).toString();
                         clickPixelLocation.setText(loc);
 
                     }
@@ -314,27 +314,31 @@ public class ResultActivity extends AppCompatActivity {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setIcon(R.mipmap.ic_launcher);
         builder.setMessage("Please set a file name:")
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                .setPositiveButton("Okay!", new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int id) {
 
                         Toast.makeText(getApplicationContext(),
-                                "YOU DID!",Toast.LENGTH_LONG).show();
+                                "Saved!",Toast.LENGTH_LONG).show();
                         fileName = input.getText().toString();
-                        String end = fileName.substring(fileName.length()-4);
-                        System.out.println("******end is " + end);
-                        if (!end.equals(".jpg"))
+                        if(fileName.length()>4) {
+                            String end = fileName.substring(fileName.length() - 4);
+                            System.out.println("******end is " + end);
+                            if (!end.equals(".jpg"))
+                                fileName += ".jpg";
+                        }
+                        else
                             fileName += ".jpg";
                         saveFile();
                     }
                 })
-                .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                .setNegativeButton("Never mind!", new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int id) {
 
                         // User cancelled the dialog
                         Toast.makeText(getApplicationContext(),
-                                "YOU CANCELED THE STORAGE!",Toast.LENGTH_LONG).show();
+                                "Canceled!",Toast.LENGTH_LONG).show();
                     }
                 });
 

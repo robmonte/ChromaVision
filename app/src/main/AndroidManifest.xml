@@ -16,7 +16,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme" >
         <activity
             android:name=".SplashActivity"
             android:noHistory="true"
@@ -29,19 +29,23 @@
             </intent-filter>
         </activity>
         <activity android:name=".MainMenuActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"/>
         <activity
             android:name=".ResultActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"/>
         <activity
             android:name=".ResultActivity2"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"/>
 
         <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity" />
 
         <activity
             android:name=".AboutActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/NoActionBar" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -54,10 +58,13 @@
         </provider>
 
         <activity android:name=".TutorialActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"/>
+
         <activity android:name=".FileListActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/NoActionBar"/>
+            android:theme="@style/NoActionBar" />
+
     </application>
 
 </manifest>

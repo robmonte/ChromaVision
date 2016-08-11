@@ -47,6 +47,30 @@ public class ResultActivity2 extends AppCompatActivity {
     private FileInputStream fis;
     private ResultActivity mResult;
 
+    private enum COLORS { DARK_RED, RED, LIGHT_RED,
+        DARK_GREEN, GREEN, LIGHT_GREEN,
+        DARK_BLUE, BLUE, CYAN,
+        BROWN, ORANGE, LIGHT_ORANGE,
+        DARK_YELLOW, YELLOW, LIGHT_YELLOW,
+        DARK_PURPLE, PURPLE, PINK,
+        BLACK, GREY, WHITE,
+        DARK_GREY, LIGHT_GREY,
+        DARKER_GREEN, LIGHTER_GREEN,
+        ERROR }
+
+    private static final int[] COLOR_LIST = { Color.rgb(0x80, 0x00, 0x00), Color.rgb(0xFF, 0x00, 0x00), Color.rgb(0xFF, 0x80, 0x80),
+            Color.rgb(0x00, 0x80, 0x00), Color.rgb(0x00, 0xC0, 0x00), Color.rgb(0x00, 0xFF, 0x00),
+            Color.rgb(0x00, 0x00, 0x80), Color.rgb(0x00, 0x00, 0xFF), Color.rgb(0x00, 0xFF, 0xFF),
+            Color.rgb(0x80, 0x40, 0x00), Color.rgb(0xFF, 0x80, 0x00), Color.rgb(0xFF, 0xC0, 0x80),
+            Color.rgb(0x80, 0x80, 0x00), Color.rgb(0xFF, 0xFF, 0x00), Color.rgb(0xFF, 0xFF, 0x80),
+            Color.rgb(0x40, 0x00, 0x40), Color.rgb(0x80, 0x00, 0x80), Color.rgb(0xFF, 0x00, 0xFF),
+            Color.rgb(0x00, 0x00, 0x00), Color.rgb(0x80, 0x80, 0x80), Color.rgb(0xFF, 0xFF, 0xFF),
+            Color.rgb(0x40, 0x40, 0x40), Color.rgb(0xC0, 0xC0, 0xC0),
+            Color.rgb(0x00, 0x40, 0x00), Color.rgb(0x80, 0xFF, 0x80),
+            Color.rgb(0x01, 0x01, 0x01) };
+
+    private int colorCount[] = new int[COLOR_LIST.length];
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Intent intent = getIntent();
@@ -94,7 +118,11 @@ public class ResultActivity2 extends AppCompatActivity {
                         clickPixelBackground.setBackgroundColor(Color.rgb(redValue, greenValue, blueValue));
                         System.out.println(x + " , " + y);
                         System.out.println("red =" + redValue + "blue = " + blueValue + "green = " + greenValue);
-                        String loc = "(" + x + ", " + y + "): ";
+                        //String loc = "(" + x + ", " + y + "): ";
+                        // clickPixelLocation.setText(loc);
+                        float [] Hsb = new float[3];
+                        Color.RGBToHSV(redValue,greenValue,blueValue, Hsb);
+                        String loc = "(" + x + ", " + y + ") is " + getTouchedColor(Hsb).toString();
                         clickPixelLocation.setText(loc);
                     }
                 }
@@ -104,6 +132,120 @@ public class ResultActivity2 extends AppCompatActivity {
         });
 
 
+    }
+
+    private COLORS getTouchedColor(float[] hsb) {
+        float deg = hsb[0];
+
+        if (hsb[2] < 0.1) {
+            // Black
+            colorCount[COLORS.valueOf("BLACK").ordinal()]++;
+            return COLORS.valueOf("BLACK");
+        } else if ((hsb[1] < 0.20 && hsb[2] >= 0.80) || (deg >= 0.3 && deg < 0.6 && hsb[1] < 0.3 && hsb[2] >= 0.7)) {
+            // White
+            colorCount[COLORS.valueOf("WHITE").ordinal()]++;
+            return COLORS.valueOf("WHITE");
+        } else if ((hsb[1] < 0.15 && hsb[2] >= 0.1 && hsb[2] < 0.66) || ((deg < 64 || deg >= 180) && hsb[1] < 0.15)) {
+            // Grey
+            colorCount[COLORS.valueOf("GREY").ordinal()]++;
+            return COLORS.valueOf("GREY");
+        } else {
+            //System.out.println(deg);
+            if (deg >= 335 || deg < 11) {
+                if (deg < 350 && deg > 11 && hsb[1] < 0.65 && hsb[2] >= 0.5) {
+                    // Pink
+                    colorCount[COLORS.valueOf("PINK").ordinal()]++;
+                    return COLORS.valueOf("PINK");
+                } else if (hsb[1] >= 0.8 || (deg >= 0 && hsb[1] >= 0.5)) {
+                    // Red
+                    colorCount[COLORS.valueOf("RED").ordinal()]++;
+                    return COLORS.valueOf("RED");
+                } else {
+                    // Dark Red
+                    colorCount[COLORS.valueOf("DARK_RED").ordinal()]++;
+                    return COLORS.valueOf("DARK_RED");
+                }
+            } else if (deg >= 11 && deg < 45) {
+                if ((hsb[1] >= 0.8 && hsb[2] >= 0.60)) {
+                    // Orange
+                    colorCount[COLORS.valueOf("ORANGE").ordinal()]++;
+                    return COLORS.valueOf("ORANGE");
+                } else if ((hsb[2] >= 0.75)) {
+                    // Light Orange
+                    colorCount[COLORS.valueOf("LIGHT_ORANGE").ordinal()]++;
+                    return COLORS.valueOf("LIGHT_ORANGE");
+                } else {
+                    // Brown
+                    colorCount[COLORS.valueOf("BROWN").ordinal()]++;
+                    return COLORS.valueOf("BROWN");
+                }
+
+            } else if (deg >= 45 && deg < 70) {
+                // Yellow
+                if (deg > 60) {
+                    // Blue
+                    if (hsb[1] < 0.25 && hsb[2] < 0.35) {
+                        colorCount[COLORS.valueOf("BLUE").ordinal()]++;
+                        return COLORS.valueOf("BLUE");
+                    } else {
+                        // Yellow
+                        colorCount[COLORS.valueOf("YELLOW").ordinal()]++;
+                        return COLORS.valueOf("YELLOW");
+                    }
+                } else {
+                    colorCount[COLORS.valueOf("YELLOW").ordinal()]++;
+                    return COLORS.valueOf("YELLOW");
+                }
+            } else if (deg >= 70 && deg < 178) {
+                if (deg < 170 || (hsb[1] >= 0.5 && hsb[2] > 0.4)) {
+                    // Green
+                    colorCount[COLORS.valueOf("GREEN").ordinal()]++;
+                    return COLORS.valueOf("GREEN");
+                } else {
+                    // Blue
+                    colorCount[COLORS.valueOf("BLUE").ordinal()]++;
+                    return COLORS.valueOf("BLUE");
+                }
+            } else if (deg >= 178 && deg < 255) {
+                if (hsb[2] >= 0.5) {
+                    // Blue
+                    colorCount[COLORS.valueOf("BLUE").ordinal()]++;
+                    return COLORS.valueOf("BLUE");
+                } else if (deg >= 245) {
+                    // Purple
+                    colorCount[COLORS.valueOf("PURPLE").ordinal()]++;
+                    return COLORS.valueOf("PURPLE");
+                } else {
+                    // Blue
+                    colorCount[COLORS.valueOf("BLUE").ordinal()]++;
+                    return COLORS.valueOf("BLUE");
+                }
+            } else if (deg >= 255 && deg < 310) {
+                if (hsb[2] < 0.85) {
+                    // Purple
+                    colorCount[COLORS.valueOf("PURPLE").ordinal()]++;
+                    return COLORS.valueOf("PURPLE");
+                } else {
+                    // Pink
+                    colorCount[COLORS.valueOf("PINK").ordinal()]++;
+                    return COLORS.valueOf("PINK");
+                }
+            } else if (deg >= 310 && deg < 335) {
+                if ((hsb[1] < 0.5 && hsb[2] >= 0.75) || (hsb[1] >= 0.70 && hsb[2] >= 0.75) || (hsb[1] >= 0.5 && hsb[2] >= 0.65)) {
+                    // Pink
+                    colorCount[COLORS.valueOf("PINK").ordinal()]++;
+                    return COLORS.valueOf("PINK");
+                } else {
+                    // Purple
+                    colorCount[COLORS.valueOf("PURPLE").ordinal()]++;
+                    return COLORS.valueOf("PURPLE");
+                }
+            } else {
+                colorCount[COLORS.valueOf("ERROR").ordinal()]++;
+                System.out.printf("Error color is %f, %f, %f\n", deg, hsb[1], hsb[2]);
+                return COLORS.valueOf("ERROR");
+            }
+        }
     }
 
     private void readFile() {
@@ -188,23 +330,23 @@ public class ResultActivity2 extends AppCompatActivity {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setIcon(R.mipmap.ic_launcher);
         builder.setMessage("Please set a file name:")
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                .setPositiveButton("Okay!", new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int id) {
 
                         Toast.makeText(getApplicationContext(),
-                                "YOU DID!",Toast.LENGTH_LONG).show();
+                                "Saved!",Toast.LENGTH_LONG).show();
                         fileName = input.getText().toString();
                         saveFile();
                     }
                 })
-                .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                .setNegativeButton("Never mind!", new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int id) {
 
                         // User cancelled the dialog
                         Toast.makeText(getApplicationContext(),
-                                "YOU CANCELED THE STORAGE!",Toast.LENGTH_LONG).show();
+                                "Canceled",Toast.LENGTH_LONG).show();
                     }
                 });
 

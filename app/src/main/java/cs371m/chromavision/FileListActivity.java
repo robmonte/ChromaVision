@@ -1,8 +1,10 @@
 package cs371m.chromavision;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -60,11 +62,8 @@ public class FileListActivity extends AppCompatActivity{
                         view.setSelected(true);
                         // ListView Clicked item value
                         itemValue = (String) listview.getItemAtPosition(position);
-                        System.out.println("click: Postion: " + itemPosition + ", ListItem: " + itemValue);
+                        System.out.println("click: Position: " + itemPosition + ", ListItem: " + itemValue);
 
-                        Toast.makeText(getApplicationContext(),
-                                "click: Postion: " + itemPosition +
-                                        ", ListItem: " + itemValue, Toast.LENGTH_LONG).show();
 
                     }
                 });
@@ -94,9 +93,20 @@ public class FileListActivity extends AppCompatActivity{
     }
 
     public void readFileO (View view) {
-
-        Intent intent =new Intent(this, ResultActivity2.class);
-        startActivity(intent);
+        if (itemValue == null) {
+            final AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+            alertDialog.setIcon(R.mipmap.ic_launcher);
+            alertDialog.setMessage("Please choose a file!")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                        }
+                    });
+            alertDialog.show();
+        }
+        else  {
+            Intent intent =new Intent(this, ResultActivity2.class);
+            startActivity(intent);
+        }
     }
 
 
