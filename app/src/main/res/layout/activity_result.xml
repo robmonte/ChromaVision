@@ -33,13 +33,13 @@
             android:layout_height="wrap_content"
             android:padding="3dp"
             android:id="@+id/clickPixelBorder"
-            android:layout_weight="0.5">
+            android:layout_weight="0.5" >
             <TextView
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:text=" "
-              android:textSize="25sp"
-              android:id="@+id/clickPixel" />
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=" "
+                android:textSize="25sp"
+                android:id="@+id/clickPixel" />
         </LinearLayout>
 
 
@@ -52,7 +52,6 @@
         android:layout_weight="0.5">
 
         <ScrollView
-            android:id="@+id/resultString"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentTop="true"

@@ -1,12 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="About!"
+        android:textSize="50sp"
+        android:text="About ChromaVision!"
+        android:gravity="center_horizontal"
         android:id="@+id/textView" />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/ic_launcher"
+        android:layout_weight="0.3"
+        android:layout_below="@+id/textView"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_horizontal" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textSize="20sp"
+        android:text="An app by:\nRobert Montefusco\nTony Sampson\nYajie Niu\n\nFor CS371M Mobile Computing\nat the University of Texas at Austin\n\nAnd for those who need help with colors!\n\n\nSupport email: robert.t.montefusco@utexas.edu"
+        android:layout_weight="0.6"
+        android:gravity="center_horizontal"
+        android:id="@+id/textView2"
+        android:autoLink="email" />
+
 </LinearLayout>

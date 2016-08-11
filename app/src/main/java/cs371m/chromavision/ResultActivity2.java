@@ -31,9 +31,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 
-/**
- * Created by niuyajie on 8/10/16.
- */
+
 public class ResultActivity2 extends AppCompatActivity {
 
     private static final String TAG = "Result Activity";
