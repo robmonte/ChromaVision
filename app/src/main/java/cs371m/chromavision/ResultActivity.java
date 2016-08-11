@@ -139,8 +139,13 @@ public class ResultActivity extends AppCompatActivity {
                         clickPixelBackground.setBackgroundColor(Color.rgb(redValue, greenValue, blueValue));
                         System.out.println(x + " , " + y);
                         System.out.println("red =" + redValue + "blue = " + blueValue + "green = " + greenValue);
-                        String loc = "(" + x + ", " + y + "): ";
+                        //String loc = "(" + x + ", " + y + "): ";
+                       // clickPixelLocation.setText(loc);
+                        float [] Hsb = new float[3];
+                        Color.RGBToHSV(redValue,greenValue,blueValue, Hsb);
+                        String loc = "(" + x + ", " + y + ") is: " + getTouchedColor(Hsb).toString();
                         clickPixelLocation.setText(loc);
+
                     }
                 }
                 return true;
@@ -158,6 +163,122 @@ public class ResultActivity extends AppCompatActivity {
         mRunPicture.execute(pictureUri);
 
     }
+
+
+    private COLORS getTouchedColor(float[] hsb) {
+        float deg = hsb[0];
+
+        if (hsb[2] < 0.1) {
+            // Black
+            colorCount[COLORS.valueOf("BLACK").ordinal()]++;
+            return COLORS.valueOf("BLACK");
+        } else if ((hsb[1] < 0.20 && hsb[2] >= 0.80) || (deg >= 0.3 && deg < 0.6 && hsb[1] < 0.3 && hsb[2] >= 0.7)) {
+            // White
+            colorCount[COLORS.valueOf("WHITE").ordinal()]++;
+            return COLORS.valueOf("WHITE");
+        } else if ((hsb[1] < 0.15 && hsb[2] >= 0.1 && hsb[2] < 0.66) || ((deg < 64 || deg >= 180) && hsb[1] < 0.15)) {
+            // Grey
+            colorCount[COLORS.valueOf("GREY").ordinal()]++;
+            return COLORS.valueOf("GREY");
+        } else {
+            //System.out.println(deg);
+            if (deg >= 335 || deg < 11) {
+                if (deg < 350 && deg > 11 && hsb[1] < 0.65 && hsb[2] >= 0.5) {
+                    // Pink
+                    colorCount[COLORS.valueOf("PINK").ordinal()]++;
+                    return COLORS.valueOf("PINK");
+                } else if (hsb[1] >= 0.8 || (deg >= 0 && hsb[1] >= 0.5)) {
+                    // Red
+                    colorCount[COLORS.valueOf("RED").ordinal()]++;
+                    return COLORS.valueOf("RED");
+                } else {
+                    // Dark Red
+                    colorCount[COLORS.valueOf("DARK_RED").ordinal()]++;
+                    return COLORS.valueOf("DARK_RED");
+                }
+            } else if (deg >= 11 && deg < 45) {
+                if ((hsb[1] >= 0.8 && hsb[2] >= 0.60)) {
+                    // Orange
+                    colorCount[COLORS.valueOf("ORANGE").ordinal()]++;
+                    return COLORS.valueOf("ORANGE");
+                } else if ((hsb[2] >= 0.75)) {
+                    // Light Orange
+                    colorCount[COLORS.valueOf("LIGHT_ORANGE").ordinal()]++;
+                    return COLORS.valueOf("LIGHT_ORANGE");
+                } else {
+                    // Brown
+                    colorCount[COLORS.valueOf("BROWN").ordinal()]++;
+                    return COLORS.valueOf("BROWN");
+                }
+
+            } else if (deg >= 45 && deg < 70) {
+                // Yellow
+                if (deg > 60) {
+                    // Blue
+                    if (hsb[1] < 0.25 && hsb[2] < 0.35) {
+                        colorCount[COLORS.valueOf("BLUE").ordinal()]++;
+                        return COLORS.valueOf("BLUE");
+                    } else {
+                        // Yellow
+                        colorCount[COLORS.valueOf("YELLOW").ordinal()]++;
+                        return COLORS.valueOf("YELLOW");
+                    }
+                } else {
+                    colorCount[COLORS.valueOf("YELLOW").ordinal()]++;
+                    return COLORS.valueOf("YELLOW");
+                }
+            } else if (deg >= 70 && deg < 178) {
+                if (deg < 170 || (hsb[1] >= 0.5 && hsb[2] > 0.4)) {
+                    // Green
+                    colorCount[COLORS.valueOf("GREEN").ordinal()]++;
+                    return COLORS.valueOf("GREEN");
+                } else {
+                    // Blue
+                    colorCount[COLORS.valueOf("BLUE").ordinal()]++;
+                    return COLORS.valueOf("BLUE");
+                }
+            } else if (deg >= 178 && deg < 255) {
+                if (hsb[2] >= 0.5) {
+                    // Blue
+                    colorCount[COLORS.valueOf("BLUE").ordinal()]++;
+                    return COLORS.valueOf("BLUE");
+                } else if (deg >= 245) {
+                    // Purple
+                    colorCount[COLORS.valueOf("PURPLE").ordinal()]++;
+                    return COLORS.valueOf("PURPLE");
+                } else {
+                    // Blue
+                    colorCount[COLORS.valueOf("BLUE").ordinal()]++;
+                    return COLORS.valueOf("BLUE");
+                }
+            } else if (deg >= 255 && deg < 310) {
+                if (hsb[2] < 0.85) {
+                    // Purple
+                    colorCount[COLORS.valueOf("PURPLE").ordinal()]++;
+                    return COLORS.valueOf("PURPLE");
+                } else {
+                    // Pink
+                    colorCount[COLORS.valueOf("PINK").ordinal()]++;
+                    return COLORS.valueOf("PINK");
+                }
+            } else if (deg >= 310 && deg < 335) {
+                if ((hsb[1] < 0.5 && hsb[2] >= 0.75) || (hsb[1] >= 0.70 && hsb[2] >= 0.75) || (hsb[1] >= 0.5 && hsb[2] >= 0.65)) {
+                    // Pink
+                    colorCount[COLORS.valueOf("PINK").ordinal()]++;
+                    return COLORS.valueOf("PINK");
+                } else {
+                    // Purple
+                    colorCount[COLORS.valueOf("PURPLE").ordinal()]++;
+                    return COLORS.valueOf("PURPLE");
+                }
+            } else {
+                colorCount[COLORS.valueOf("ERROR").ordinal()]++;
+                System.out.printf("Error color is %f, %f, %f\n", deg, hsb[1], hsb[2]);
+                return COLORS.valueOf("ERROR");
+            }
+        }
+    }
+
 
     @Override
     public void onBackPressed()
