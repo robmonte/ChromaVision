@@ -474,6 +474,7 @@ public class MainMenuActivity extends AppCompatActivity {
     }
 
     public void openFolder(View view) {
+
         Intent intent = new Intent(this, FileListActivity.class);
         startActivity(intent);
     }

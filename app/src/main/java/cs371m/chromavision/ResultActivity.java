@@ -60,6 +60,8 @@ public class ResultActivity extends AppCompatActivity {
     private Integer saved;
     private EditText input;
     private FileInputStream fis;
+    private MainMenuActivity mMian;
+    public Uri pictureUri;
 
 //    private enum COLORS { BLACK, VERY_DARK_RED, DARK_RED, MEDIUM_RED, BRIGHT_RED, PALE_RED, LIGHT_RED, VERY_LIGHT_RED, WHITE }
 //
@@ -95,7 +97,7 @@ public class ResultActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Intent intent = getIntent();
-        Uri picture = intent.getParcelableExtra("pictureUri");
+        pictureUri = intent.getParcelableExtra("pictureUri");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result);
         mProgressBar = (ProgressBar)findViewById(R.id.progressBar);
@@ -106,7 +108,7 @@ public class ResultActivity extends AppCompatActivity {
         }
 
        final ImageView mImageView = (ImageView) findViewById(R.id.resultImage);
-        System.out.println("Getting the cropped picture from " + picture);
+        System.out.println("Getting the cropped picture from " + pictureUri);
         mImageView.setDrawingCacheEnabled(true);
         mImageView.setOnTouchListener( new View.OnTouchListener(){
             @Override
@@ -146,14 +148,14 @@ public class ResultActivity extends AppCompatActivity {
 
         });
         if (mImageView != null) {
-            mImageView.setImageURI(picture);
+            mImageView.setImageURI(pictureUri);
         }
 
         mTextView = (TextView)findViewById(R.id.colorDataView);
 
         mRunPicture = new GenerateColorDataAsync();
         // generateColorData(picture);
-        mRunPicture.execute(picture);
+        mRunPicture.execute(pictureUri);
 
     }
 
@@ -180,7 +182,7 @@ public class ResultActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         ScrollView resultString = (ScrollView) findViewById(R.id.resultString);
-        if (item.getItemId() == R.id.save)
+        if (item.getItemId() == R.id.save && saved == 0)
             nameFile(resultString);
         return true;
     }
@@ -198,6 +200,10 @@ public class ResultActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(),
                                 "YOU DID!",Toast.LENGTH_LONG).show();
                         fileName = input.getText().toString();
+                        String end = fileName.substring(fileName.length()-4);
+                        System.out.println("******end is " + end);
+                        if (!end.equals(".jpg"))
+                            fileName += ".jpg";
                         saveFile();
                     }
                 })
@@ -222,54 +228,115 @@ public class ResultActivity extends AppCompatActivity {
 
 
     private void saveFile() {
-//        System.out.println("in saveFile");
         if (saved == 0) {
             System.out.println("Are you actually saving file?");
             System.out.println(fileName);
             try {
-                FileOutputStream fos
-                        = openFileOutput(fileName, MODE_PRIVATE);
 
-                PrintStream writer = new PrintStream(fos);
-//            Random r = new Random();
+                InputStream load = null;
+
+                try {
+                    load = getContentResolver().openInputStream(pictureUri);
+                }
+                catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+                Bitmap save = BitmapFactory.decodeStream(load);
+
+                OutputStream fos = null;
+
+                File dirFile = getFilesDir();
+
+                File out = new File(dirFile, fileName);
+
+                try {
+                    fos = new FileOutputStream(out);
+                }
+                catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+                save.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+
+                try {
+                    fos.flush();
+                    fos.close();
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+
+
+                FileOutputStream fosText
+                        = openFileOutput(fileName + ".Chroma", MODE_PRIVATE);
+
+                PrintStream writer = new PrintStream(fosText);
                 writer.println(resultPicture);
                 System.out.println(resultPicture);
                 writer.close();
                 fis = openFileInput(fileName);
 
-
-//                    System.out.println(fis.toString());
-//                    String content = new Scanner(new File(fileName)).useDelimiter("\\Z").next();
-//                    System.out.println(content);
-//                    System.out.println(uri + "");
                 saved = 1;
 
             } catch (FileNotFoundException e) {
                 Log.d(TAG, "Exception trying to open file: " + e);
             }
 
-            try {
-                Uri uri = Uri.fromFile(new File(fileName));
-                BufferedReader reader;
-                reader = new BufferedReader(new InputStreamReader(fis));
-                System.out.println("Reading File line by line using Bufferreader");
-                String line = reader.readLine();
-
-                while (line != null) {
-                    System.out.println(line);
-                    line = reader.readLine();
-                }
-
-            }
-            catch (IOException e)
-            {
-                ;
-            }
-//
-
         }
     }
 
+    public void readFile() {
+        FileListActivity mFile = new FileListActivity();
+        File dir = this.getFilesDir();
+        System.out.println(getFilesDir().toString());
+
+        try {
+            Uri uri = Uri.fromFile(new File(mFile.itemValue));
+
+//            InputStream in = null;
+//
+//            try {
+//                in = getContentResolver().openInputStream(uri);
+//            }
+//            catch (FileNotFoundException e) {
+//                e.printStackTrace();
+//            }
+//
+//            Bitmap image = BitmapFactory.decodeStream(in);
+            ImageView imageView = (ImageView) findViewById(R.id.resultImage);
+            //imageView.setImageBitmap(image);
+
+            try {
+                imageView.setImageURI(uri);
+            }
+            catch (NullPointerException n){
+                System.out.println("Reading File line by line using Bufferreader");
+
+            }
+
+//            Uri uri = Uri.fromFile(new File(fileName + ".Chroma"));
+            fis = openFileInput(mFile.itemValue + ".Chroma");
+            BufferedReader reader;
+            reader = new BufferedReader(new InputStreamReader(fis));
+            System.out.println("Reading File line by line using Bufferreader");
+            String line = reader.readLine();
+            StringBuilder output = new StringBuilder();
+
+            while (line != null) {
+                System.out.println(line);
+                output.append(line);
+                output.append("\n");
+                line = reader.readLine();
+            }
+            mTextView.setText(output);
+        }
+        catch (IOException e)
+        {
+            ;
+        }
+    }
 
 
 //        try {

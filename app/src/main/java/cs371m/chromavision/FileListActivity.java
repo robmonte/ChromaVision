@@ -1,16 +1,19 @@
 package cs371m.chromavision;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +32,9 @@ public class FileListActivity extends AppCompatActivity{
     private ArrayAdapter<String> adapter;
     private File file[];
     private TextView content;
+
+    public int opened;
+    public static String itemValue;
 
     @Override
     public void onCreate(Bundle bundle) {
@@ -51,13 +57,15 @@ public class FileListActivity extends AppCompatActivity{
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         // ListView Clicked item index
                         int itemPosition = position;
-
+                        view.setSelected(true);
                         // ListView Clicked item value
-                        String itemValue = (String) listview.getItemAtPosition(position);
+                        itemValue = (String) listview.getItemAtPosition(position);
                         System.out.println("click: Postion: " + itemPosition + ", ListItem: " + itemValue);
+
                         Toast.makeText(getApplicationContext(),
                                 "click: Postion: " + itemPosition +
                                         ", ListItem: " + itemValue, Toast.LENGTH_LONG).show();
+
                     }
                 });
     }
@@ -70,15 +78,26 @@ public class FileListActivity extends AppCompatActivity{
         Log.d("Files", "Size: " + file.length);
         for (int i = 0; i < file.length; i++) {
             Log.d("Files", "FileName:" + file[i].getName());
-            files.add(file[i].getName());
+            String str = file[i].getName();
+            if (str.substring(str.length()-4).equals(".jpg"))
+                files.add(file[i].getName());
         }
     }
 
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        super.onCreateOptionsMenu(menu);
-//
-//        MenuInflater inflater = getMenuInflater();
-//        inflater.inflate(R.menu.menu_main, menu);
-//        return true;
-//    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_file_list, menu);
+
+        return true;
+    }
+
+    public void readFileO (View view) {
+
+        Intent intent =new Intent(this, ResultActivity2.class);
+        startActivity(intent);
+    }
+
+
 }

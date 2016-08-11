@@ -15,13 +15,14 @@
         android:layout_height="0dp"
         android:layout_weight="0.3" >
 
-        <Button
+        <ImageButton
             android:layout_width="215dp"
             android:layout_height="wrap_content"
             android:text="@string/capture_a_new_picture"
             android:textSize="26sp"
             android:id="@+id/button1"
             android:onClick="takeAPicture"
+            android:src="@drawable/capturepicturebutton"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true" />
 
