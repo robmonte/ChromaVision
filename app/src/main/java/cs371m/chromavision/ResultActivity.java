@@ -42,6 +42,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -668,7 +670,7 @@ public class ResultActivity extends AppCompatActivity {
                 System.out.println(colorCount[i] + " / " + imageSize);
                 double percent = (colorCount[i] / imageSize) * 100;
 
-                if (percent != 0) {
+                if (percent != 0 && !df.format(percent).equals("0") && !df.format(new BigDecimal(percent).setScale(2, RoundingMode.HALF_UP).doubleValue()).equals("0")) {
                     String s = COLORS.values()[i] + ":";
                     if (percent < 10.0) {
                         while (s.length() < 9)
@@ -678,7 +680,7 @@ public class ResultActivity extends AppCompatActivity {
                         while (s.length() < 8)
                             s += " ";
                     }
-                    outputArray[i] = s + df.format(percent) + "% ";
+                    outputArray[i] = s + df.format(new BigDecimal(percent).setScale(2, RoundingMode.HALF_UP).doubleValue()) + "% ";
                 }
             }
 
