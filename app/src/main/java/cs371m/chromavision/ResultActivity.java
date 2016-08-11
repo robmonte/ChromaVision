@@ -1,12 +1,14 @@
 package cs371m.chromavision;
 
 import android.app.FragmentManager;
+import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -14,6 +16,7 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -61,7 +64,8 @@ public class ResultActivity extends AppCompatActivity {
     private EditText input;
     private FileInputStream fis;
     private MainMenuActivity mMian;
-    public Uri pictureUri;
+    private Uri pictureUri;
+    private boolean doneAsync;
 
 //    private enum COLORS { BLACK, VERY_DARK_RED, DARK_RED, MEDIUM_RED, BRIGHT_RED, PALE_RED, LIGHT_RED, VERY_LIGHT_RED, WHITE }
 //
@@ -96,6 +100,7 @@ public class ResultActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        doneAsync = false;
         Intent intent = getIntent();
         pictureUri = intent.getParcelableExtra("pictureUri");
         super.onCreate(savedInstanceState);
@@ -168,110 +173,140 @@ public class ResultActivity extends AppCompatActivity {
     private COLORS getTouchedColor(float[] hsb) {
         float deg = hsb[0];
 
-        if (hsb[2] < 0.1) {
+        if (hsb[2] < 0.1 ) {
             // Black
             colorCount[COLORS.valueOf("BLACK").ordinal()]++;
             return COLORS.valueOf("BLACK");
-        } else if ((hsb[1] < 0.20 && hsb[2] >= 0.80) || (deg >= 0.3 && deg < 0.6 && hsb[1] < 0.3 && hsb[2] >= 0.7)) {
+        }
+        else if ((hsb[1] < 0.20 && hsb[2] >= 0.80) || (deg >= 0.3 && deg < 0.6 && hsb[1] < 0.3 && hsb[2] >= 0.7)) {
             // White
             colorCount[COLORS.valueOf("WHITE").ordinal()]++;
             return COLORS.valueOf("WHITE");
-        } else if ((hsb[1] < 0.15 && hsb[2] >= 0.1 && hsb[2] < 0.66) || ((deg < 64 || deg >= 180) && hsb[1] < 0.15)) {
+        }
+        else if ((hsb[1] < 0.15 && hsb[2] >= 0.1 && hsb[2] < 0.75) || (hsb[1] < 0.4 && hsb[2] < 0.2) || ((deg < 64 || deg >= 180) && hsb[1] < 0.15)) {
             // Grey
             colorCount[COLORS.valueOf("GREY").ordinal()]++;
             return COLORS.valueOf("GREY");
-        } else {
+        }
+        else {
             //System.out.println(deg);
-            if (deg >= 335 || deg < 11) {
+            if (deg >= 335 || deg <  11) {
                 if (deg < 350 && deg > 11 && hsb[1] < 0.65 && hsb[2] >= 0.5) {
                     // Pink
                     colorCount[COLORS.valueOf("PINK").ordinal()]++;
                     return COLORS.valueOf("PINK");
-                } else if (hsb[1] >= 0.8 || (deg >= 0 && hsb[1] >= 0.5)) {
+                }
+                else /*if (hsb[1] >= 0.8 || (deg >= 0 && hsb[1] >= 0.5))*/ {
                     // Red
                     colorCount[COLORS.valueOf("RED").ordinal()]++;
                     return COLORS.valueOf("RED");
-                } else {
-                    // Dark Red
-                    colorCount[COLORS.valueOf("DARK_RED").ordinal()]++;
-                    return COLORS.valueOf("DARK_RED");
                 }
-            } else if (deg >= 11 && deg < 45) {
-                if ((hsb[1] >= 0.8 && hsb[2] >= 0.60)) {
+//                else {
+//                    // Dark Red
+//                    colorCount[COLORS.valueOf("DARK_RED").ordinal()]++;
+//                    return COLORS.valueOf("DARK_RED");
+//                }
+            }
+            else if (deg >= 11 && deg < 45) {
+                if ((hsb[1] >= 0.8 || hsb[1] > 0.5 && hsb[2] > 0.7 || hsb[2] > 0.85 /*&& hsb[2] >= 0.60*/)) {
                     // Orange
                     colorCount[COLORS.valueOf("ORANGE").ordinal()]++;
                     return COLORS.valueOf("ORANGE");
-                } else if ((hsb[2] >= 0.75)) {
-                    // Light Orange
-                    colorCount[COLORS.valueOf("LIGHT_ORANGE").ordinal()]++;
-                    return COLORS.valueOf("LIGHT_ORANGE");
-                } else {
+                }
+//                else if ((hsb[2] >= 0.75)) {
+//                    // Light Orange
+//                    colorCount[COLORS.valueOf("LIGHT_ORANGE").ordinal()]++;
+//                    return COLORS.valueOf("LIGHT_ORANGE");
+//                }
+                else {
+                    if (hsb[1] < 0.4 && hsb[2] < 0.9) {
+                        // Grey
+                        colorCount[COLORS.valueOf("GREY").ordinal()]++;
+                        return COLORS.valueOf("GREY");
+                    }
                     // Brown
                     colorCount[COLORS.valueOf("BROWN").ordinal()]++;
                     return COLORS.valueOf("BROWN");
                 }
 
-            } else if (deg >= 45 && deg < 70) {
+            }
+            else if (deg >=  45 && deg <  70) {
                 // Yellow
                 if (deg > 60) {
                     // Blue
                     if (hsb[1] < 0.25 && hsb[2] < 0.35) {
                         colorCount[COLORS.valueOf("BLUE").ordinal()]++;
                         return COLORS.valueOf("BLUE");
-                    } else {
+                    }
+                    else if (hsb[1] < 0.3 && hsb[2] < 0.85) {
+                        colorCount[COLORS.valueOf("GREY").ordinal()]++;
+                        return COLORS.valueOf("GREY");
+                    }
+                    else {
                         // Yellow
                         colorCount[COLORS.valueOf("YELLOW").ordinal()]++;
                         return COLORS.valueOf("YELLOW");
                     }
-                } else {
+                }
+                else {
                     colorCount[COLORS.valueOf("YELLOW").ordinal()]++;
                     return COLORS.valueOf("YELLOW");
                 }
-            } else if (deg >= 70 && deg < 178) {
+            }
+            else if (deg >=  70 && deg < 178) {
                 if (deg < 170 || (hsb[1] >= 0.5 && hsb[2] > 0.4)) {
                     // Green
                     colorCount[COLORS.valueOf("GREEN").ordinal()]++;
                     return COLORS.valueOf("GREEN");
-                } else {
+                }
+                else {
                     // Blue
                     colorCount[COLORS.valueOf("BLUE").ordinal()]++;
                     return COLORS.valueOf("BLUE");
                 }
-            } else if (deg >= 178 && deg < 255) {
+            }
+            else if (deg >= 178 && deg < 255) {
                 if (hsb[2] >= 0.5) {
                     // Blue
                     colorCount[COLORS.valueOf("BLUE").ordinal()]++;
                     return COLORS.valueOf("BLUE");
-                } else if (deg >= 245) {
+                }
+                else if (deg >= 245){
                     // Purple
                     colorCount[COLORS.valueOf("PURPLE").ordinal()]++;
                     return COLORS.valueOf("PURPLE");
-                } else {
+                }
+                else {
                     // Blue
                     colorCount[COLORS.valueOf("BLUE").ordinal()]++;
                     return COLORS.valueOf("BLUE");
                 }
-            } else if (deg >= 255 && deg < 310) {
+            }
+            else if (deg >= 255 && deg < 310) {
                 if (hsb[2] < 0.85) {
                     // Purple
                     colorCount[COLORS.valueOf("PURPLE").ordinal()]++;
                     return COLORS.valueOf("PURPLE");
-                } else {
+                }
+                else {
                     // Pink
                     colorCount[COLORS.valueOf("PINK").ordinal()]++;
                     return COLORS.valueOf("PINK");
                 }
-            } else if (deg >= 310 && deg < 335) {
+            }
+            else if (deg >= 310 && deg < 335) {
                 if ((hsb[1] < 0.5 && hsb[2] >= 0.75) || (hsb[1] >= 0.70 && hsb[2] >= 0.75) || (hsb[1] >= 0.5 && hsb[2] >= 0.65)) {
                     // Pink
                     colorCount[COLORS.valueOf("PINK").ordinal()]++;
                     return COLORS.valueOf("PINK");
-                } else {
+                }
+                else {
                     // Purple
                     colorCount[COLORS.valueOf("PURPLE").ordinal()]++;
                     return COLORS.valueOf("PURPLE");
                 }
-            } else {
+            }
+            else {
                 colorCount[COLORS.valueOf("ERROR").ordinal()]++;
                 System.out.printf("Error color is %f, %f, %f\n", deg, hsb[1], hsb[2]);
                 return COLORS.valueOf("ERROR");
@@ -295,6 +330,9 @@ public class ResultActivity extends AppCompatActivity {
         saved = 0;
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_result_page, menu);
+
+        if (doneAsync)
+            menu.getItem(0).setVisible(true);
 
         return true;
     }
@@ -320,8 +358,9 @@ public class ResultActivity extends AppCompatActivity {
 
                         Toast.makeText(getApplicationContext(),
                                 "Saved!",Toast.LENGTH_LONG).show();
+                        input.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
                         fileName = input.getText().toString();
-                        if(fileName.length()>4) {
+                        if(fileName.length() > 4) {
                             String end = fileName.substring(fileName.length() - 4);
                             System.out.println("******end is " + end);
                             if (!end.equals(".jpg"))
@@ -332,7 +371,7 @@ public class ResultActivity extends AppCompatActivity {
                         saveFile();
                     }
                 })
-                .setNegativeButton("Never mind!", new DialogInterface.OnClickListener() {
+                .setNegativeButton("Nevermind", new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int id) {
 
@@ -447,6 +486,7 @@ public class ResultActivity extends AppCompatActivity {
             reader = new BufferedReader(new InputStreamReader(fis));
             System.out.println("Reading File line by line using Bufferreader");
             String line = reader.readLine();
+
             StringBuilder output = new StringBuilder();
 
             while (line != null) {
@@ -628,8 +668,18 @@ public class ResultActivity extends AppCompatActivity {
                 System.out.println(colorCount[i] + " / " + imageSize);
                 double percent = (colorCount[i] / imageSize) * 100;
 
-                if (percent != 0)
-                    outputArray[i] = COLORS.values()[i] + ": " + df.format(percent) + "% ";
+                if (percent != 0) {
+                    String s = COLORS.values()[i] + ":";
+                    if (percent < 10.0) {
+                        while (s.length() < 9)
+                            s += " ";
+                    }
+                    else {
+                        while (s.length() < 8)
+                            s += " ";
+                    }
+                    outputArray[i] = s + df.format(percent) + "% ";
+                }
             }
 
             StringBuilder output = new StringBuilder();
@@ -651,7 +701,11 @@ public class ResultActivity extends AppCompatActivity {
         protected void onPostExecute(StringBuilder output) {
             super.onPostExecute(output);
             mProgressBar.setVisibility(View.GONE);
+            mTextView.setTypeface(Typeface.MONOSPACE);
             mTextView.setText(output);
+
+            doneAsync = true;
+            invalidateOptionsMenu();
         }
 
 
@@ -664,7 +718,8 @@ public class ResultActivity extends AppCompatActivity {
                 double row = values[0];
                 double progress = row / values[1];
                 int update = (int)(progress * 100);
-                System.out.println(update);
+                if (update % 10 == 0)
+                    System.out.println(update);
                 mProgressBar.setProgress(update);
             }
             else

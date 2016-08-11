@@ -137,110 +137,140 @@ public class ResultActivity2 extends AppCompatActivity {
     private COLORS getTouchedColor(float[] hsb) {
         float deg = hsb[0];
 
-        if (hsb[2] < 0.1) {
+        if (hsb[2] < 0.1 ) {
             // Black
             colorCount[COLORS.valueOf("BLACK").ordinal()]++;
             return COLORS.valueOf("BLACK");
-        } else if ((hsb[1] < 0.20 && hsb[2] >= 0.80) || (deg >= 0.3 && deg < 0.6 && hsb[1] < 0.3 && hsb[2] >= 0.7)) {
+        }
+        else if ((hsb[1] < 0.20 && hsb[2] >= 0.80) || (deg >= 0.3 && deg < 0.6 && hsb[1] < 0.3 && hsb[2] >= 0.7)) {
             // White
             colorCount[COLORS.valueOf("WHITE").ordinal()]++;
             return COLORS.valueOf("WHITE");
-        } else if ((hsb[1] < 0.15 && hsb[2] >= 0.1 && hsb[2] < 0.66) || ((deg < 64 || deg >= 180) && hsb[1] < 0.15)) {
+        }
+        else if ((hsb[1] < 0.15 && hsb[2] >= 0.1 && hsb[2] < 0.75) || (hsb[1] < 0.4 && hsb[2] < 0.2) || ((deg < 64 || deg >= 180) && hsb[1] < 0.15)) {
             // Grey
             colorCount[COLORS.valueOf("GREY").ordinal()]++;
             return COLORS.valueOf("GREY");
-        } else {
+        }
+        else {
             //System.out.println(deg);
-            if (deg >= 335 || deg < 11) {
+            if (deg >= 335 || deg <  11) {
                 if (deg < 350 && deg > 11 && hsb[1] < 0.65 && hsb[2] >= 0.5) {
                     // Pink
                     colorCount[COLORS.valueOf("PINK").ordinal()]++;
                     return COLORS.valueOf("PINK");
-                } else if (hsb[1] >= 0.8 || (deg >= 0 && hsb[1] >= 0.5)) {
+                }
+                else /*if (hsb[1] >= 0.8 || (deg >= 0 && hsb[1] >= 0.5))*/ {
                     // Red
                     colorCount[COLORS.valueOf("RED").ordinal()]++;
                     return COLORS.valueOf("RED");
-                } else {
-                    // Dark Red
-                    colorCount[COLORS.valueOf("DARK_RED").ordinal()]++;
-                    return COLORS.valueOf("DARK_RED");
                 }
-            } else if (deg >= 11 && deg < 45) {
-                if ((hsb[1] >= 0.8 && hsb[2] >= 0.60)) {
+//                else {
+//                    // Dark Red
+//                    colorCount[COLORS.valueOf("DARK_RED").ordinal()]++;
+//                    return COLORS.valueOf("DARK_RED");
+//                }
+            }
+            else if (deg >= 11 && deg < 45) {
+                if ((hsb[1] >= 0.8 || hsb[1] > 0.5 && hsb[2] > 0.7 || hsb[2] > 0.85 /*&& hsb[2] >= 0.60*/)) {
                     // Orange
                     colorCount[COLORS.valueOf("ORANGE").ordinal()]++;
                     return COLORS.valueOf("ORANGE");
-                } else if ((hsb[2] >= 0.75)) {
-                    // Light Orange
-                    colorCount[COLORS.valueOf("LIGHT_ORANGE").ordinal()]++;
-                    return COLORS.valueOf("LIGHT_ORANGE");
-                } else {
+                }
+//                else if ((hsb[2] >= 0.75)) {
+//                    // Light Orange
+//                    colorCount[COLORS.valueOf("LIGHT_ORANGE").ordinal()]++;
+//                    return COLORS.valueOf("LIGHT_ORANGE");
+//                }
+                else {
+                    if (hsb[1] < 0.4 && hsb[2] < 0.9) {
+                        // Grey
+                        colorCount[COLORS.valueOf("GREY").ordinal()]++;
+                        return COLORS.valueOf("GREY");
+                    }
                     // Brown
                     colorCount[COLORS.valueOf("BROWN").ordinal()]++;
                     return COLORS.valueOf("BROWN");
                 }
 
-            } else if (deg >= 45 && deg < 70) {
+            }
+            else if (deg >=  45 && deg <  70) {
                 // Yellow
                 if (deg > 60) {
                     // Blue
                     if (hsb[1] < 0.25 && hsb[2] < 0.35) {
                         colorCount[COLORS.valueOf("BLUE").ordinal()]++;
                         return COLORS.valueOf("BLUE");
-                    } else {
+                    }
+                    else if (hsb[1] < 0.3 && hsb[2] < 0.85) {
+                        colorCount[COLORS.valueOf("GREY").ordinal()]++;
+                        return COLORS.valueOf("GREY");
+                    }
+                    else {
                         // Yellow
                         colorCount[COLORS.valueOf("YELLOW").ordinal()]++;
                         return COLORS.valueOf("YELLOW");
                     }
-                } else {
+                }
+                else {
                     colorCount[COLORS.valueOf("YELLOW").ordinal()]++;
                     return COLORS.valueOf("YELLOW");
                 }
-            } else if (deg >= 70 && deg < 178) {
+            }
+            else if (deg >=  70 && deg < 178) {
                 if (deg < 170 || (hsb[1] >= 0.5 && hsb[2] > 0.4)) {
                     // Green
                     colorCount[COLORS.valueOf("GREEN").ordinal()]++;
                     return COLORS.valueOf("GREEN");
-                } else {
+                }
+                else {
                     // Blue
                     colorCount[COLORS.valueOf("BLUE").ordinal()]++;
                     return COLORS.valueOf("BLUE");
                 }
-            } else if (deg >= 178 && deg < 255) {
+            }
+            else if (deg >= 178 && deg < 255) {
                 if (hsb[2] >= 0.5) {
                     // Blue
                     colorCount[COLORS.valueOf("BLUE").ordinal()]++;
                     return COLORS.valueOf("BLUE");
-                } else if (deg >= 245) {
+                }
+                else if (deg >= 245){
                     // Purple
                     colorCount[COLORS.valueOf("PURPLE").ordinal()]++;
                     return COLORS.valueOf("PURPLE");
-                } else {
+                }
+                else {
                     // Blue
                     colorCount[COLORS.valueOf("BLUE").ordinal()]++;
                     return COLORS.valueOf("BLUE");
                 }
-            } else if (deg >= 255 && deg < 310) {
+            }
+            else if (deg >= 255 && deg < 310) {
                 if (hsb[2] < 0.85) {
                     // Purple
                     colorCount[COLORS.valueOf("PURPLE").ordinal()]++;
                     return COLORS.valueOf("PURPLE");
-                } else {
+                }
+                else {
                     // Pink
                     colorCount[COLORS.valueOf("PINK").ordinal()]++;
                     return COLORS.valueOf("PINK");
                 }
-            } else if (deg >= 310 && deg < 335) {
+            }
+            else if (deg >= 310 && deg < 335) {
                 if ((hsb[1] < 0.5 && hsb[2] >= 0.75) || (hsb[1] >= 0.70 && hsb[2] >= 0.75) || (hsb[1] >= 0.5 && hsb[2] >= 0.65)) {
                     // Pink
                     colorCount[COLORS.valueOf("PINK").ordinal()]++;
                     return COLORS.valueOf("PINK");
-                } else {
+                }
+                else {
                     // Purple
                     colorCount[COLORS.valueOf("PURPLE").ordinal()]++;
                     return COLORS.valueOf("PURPLE");
                 }
-            } else {
+            }
+            else {
                 colorCount[COLORS.valueOf("ERROR").ordinal()]++;
                 System.out.printf("Error color is %f, %f, %f\n", deg, hsb[1], hsb[2]);
                 return COLORS.valueOf("ERROR");
@@ -305,24 +335,24 @@ public class ResultActivity2 extends AppCompatActivity {
     }
 
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        saved = 0;
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_result_page, menu);
-
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        ScrollView resultString = (ScrollView) findViewById(R.id.resultString);
-        if (item.getItemId() == R.id.save)
-            nameFile(resultString);
-        return true;
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        super.onCreateOptionsMenu(menu);
+//        saved = 0;
+//        MenuInflater inflater = getMenuInflater();
+//        inflater.inflate(R.menu.menu_result_page, menu);
+//
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//
+//        ScrollView resultString = (ScrollView) findViewById(R.id.resultString);
+//        if (item.getItemId() == R.id.save)
+//            nameFile(resultString);
+//        return true;
+//    }
 
     protected void nameFile(View v) {
 
@@ -340,7 +370,7 @@ public class ResultActivity2 extends AppCompatActivity {
                         saveFile();
                     }
                 })
-                .setNegativeButton("Never mind!", new DialogInterface.OnClickListener() {
+                .setNegativeButton("Nevermind", new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int id) {
 

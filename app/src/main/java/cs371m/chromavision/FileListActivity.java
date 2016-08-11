@@ -1,6 +1,7 @@
 package cs371m.chromavision;
 
 import android.app.Activity;
+import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -45,6 +46,8 @@ public class FileListActivity extends AppCompatActivity{
 //        Toolbarbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
         System.out.println("hey are you okay?\n");
+
+        itemValue = null;
 
         files = new ArrayList<>();
         getFileList();
@@ -104,7 +107,7 @@ public class FileListActivity extends AppCompatActivity{
             alertDialog.show();
         }
         else  {
-            Intent intent =new Intent(this, ResultActivity2.class);
+            Intent intent = new Intent(this, ResultActivity2.class);
             startActivity(intent);
         }
     }

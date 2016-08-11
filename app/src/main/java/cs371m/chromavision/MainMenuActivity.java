@@ -48,6 +48,8 @@ public class MainMenuActivity extends AppCompatActivity {
     private Uri mCameraImageUri;
     private MenuItem mTutorialMenuItem;
 
+    private boolean mPrecise;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,6 +104,10 @@ public class MainMenuActivity extends AppCompatActivity {
         mTutorialMenuItem = checkTutorial;
         checkTutorial.setChecked(!showTutorial);
 
+        mPrecise = prefs.getBoolean("PreciseMode", true);
+        MenuItem checkPrecise = menu.findItem(R.id.precise_mode_checkbox);
+        checkPrecise.setChecked(mPrecise);
+
         return true;
     }
 
@@ -118,7 +124,10 @@ public class MainMenuActivity extends AppCompatActivity {
                 editor.apply();
                 return true;
             case R.id.precise_mode_checkbox:
-
+                mPrecise = prefs.getBoolean("PreciseMode", true);
+                item.setChecked(!mPrecise);
+                editor.putBoolean("PreciseMode", !mPrecise);
+                editor.apply();
                 return true;
             case R.id.tutorial_button_checkbox:
                 boolean hideTutorial = prefs.getBoolean("ViewedTutorial", false);
