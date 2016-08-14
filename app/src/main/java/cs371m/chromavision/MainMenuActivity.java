@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -191,11 +192,11 @@ public class MainMenuActivity extends AppCompatActivity {
 
         // get the local time presentation
         Locale mylocale = new Locale("en");
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", mylocale).format(new Date());
-        String imageFileName = "cameraTemp" + timeStamp;
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmssSS", mylocale).format(new Date());
+        System.out.println(timeStamp);
 
         storageDir = getAlbumStorageDir("ChromaVision");
-        return File.createTempFile(imageFileName, ".jpg", storageDir);
+        return new File(storageDir + "/" + timeStamp + ".jpg");
     }
 
     /**
@@ -225,7 +226,8 @@ public class MainMenuActivity extends AppCompatActivity {
 
         try {
             photoFile = createImageFile();
-        } catch (IOException ex) {
+        }
+        catch (IOException ex) {
             ex.printStackTrace();
         }
 
@@ -303,8 +305,6 @@ public class MainMenuActivity extends AppCompatActivity {
                 System.out.println(croppedImage);
 
                 File delete = new File(croppedImage.getPath());
-                if (delete.exists())
-                    System.out.println("it exists!!!");
                 delete.delete();
 
                 scale = resizeImageToScreen(scale);
@@ -331,6 +331,9 @@ public class MainMenuActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
+                //File deleteCamera = new File(mCameraImageUri.getPath());
+                //System.out.println("Would delete " + deleteCamera.getAbsolutePath());
+                //deleteCamera.delete();
 
                 Uri fileUri = android.net.Uri.parse(file.toURI().toString());
 
@@ -381,36 +384,39 @@ public class MainMenuActivity extends AppCompatActivity {
 
 
 
-                    InputStream galleryInput = null;
-                    if (selectedImage != null) {
-                        galleryInput = getContentResolver().openInputStream(selectedImage);
-                    }
-
-                    Bitmap scale = BitmapFactory.decodeStream(galleryInput);
-
-                    scale = resizeImageToScreen(scale);
+                    // Use the scaled bitmap instead of the gallery one!!!!!!!!!! Fix this!! OR IT MIGHT BE SCALING IN THE RETURN OF CROP
 
 
-                    storageDir = getAlbumStorageDir("ChromaVision");
-                    Locale mylocale = new Locale("en");
-                    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", mylocale).format(new Date());
-                    File file = new File(storageDir, "scaledgallery" + timeStamp + ".jpg"); // the File to save to
-                    OutputStream fOut = new FileOutputStream(file);
-
-                    scale.compress(Bitmap.CompressFormat.JPEG, 100, fOut); // saving the Bitmap to a file compressed as a JPEG with 100% compression rate
-                    fOut.flush();
-                    fOut.close(); // do not forget to close the stream
-
-                    Uri fileUri = android.net.Uri.parse(file.toURI().toString());
-
-
-                    System.out.println("receive picture from gallery.");
-                    Intent resultIntent = new Intent(this, ResultActivity.class);
-                    System.out.println("selectedImage gallery is " + fileUri);
-                    resultIntent.putExtra("pictureUri", fileUri);
-                    resultIntent.putExtra("width", scale.getWidth());
-                    resultIntent.putExtra("height", scale.getHeight());
-                    //startActivityForResult(resultIntent, GALLERY_REQUEST_CODE);
+//                    InputStream galleryInput = null;
+//                    if (selectedImage != null) {
+//                        galleryInput = getContentResolver().openInputStream(selectedImage);
+//                    }
+//
+//                    Bitmap scale = BitmapFactory.decodeStream(galleryInput);
+//
+//                    scale = resizeImageToScreen(scale);
+//
+//
+//                    storageDir = getAlbumStorageDir("ChromaVision");
+//                    Locale mylocale = new Locale("en");
+//                    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", mylocale).format(new Date());
+//                    File file = new File(storageDir, "scaledgallery" + timeStamp + ".jpg"); // the File to save to
+//                    OutputStream fOut = new FileOutputStream(file);
+//
+//                    scale.compress(Bitmap.CompressFormat.JPEG, 100, fOut); // saving the Bitmap to a file compressed as a JPEG with 100% compression rate
+//                    fOut.flush();
+//                    fOut.close(); // do not forget to close the stream
+//
+//                    Uri fileUri = android.net.Uri.parse(file.toURI().toString());
+//
+//
+//                    System.out.println("receive picture from gallery.");
+//                    Intent resultIntent = new Intent(this, ResultActivity.class);
+//                    System.out.println("selectedImage gallery is " + fileUri);
+//                    resultIntent.putExtra("pictureUri", fileUri);
+//                    resultIntent.putExtra("width", scale.getWidth());
+//                    resultIntent.putExtra("height", scale.getHeight());
+//                    //startActivityForResult(resultIntent, GALLERY_REQUEST_CODE);
                 }
                 else if (resultCode == RESULT_CANCELED) {
                     // User cancelled the image capture

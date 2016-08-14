@@ -1,24 +1,18 @@
 package cs371m.chromavision;
 
-import android.app.Activity;
-import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -56,6 +50,24 @@ public class FileListActivity extends AppCompatActivity{
         ArrayAdapter adapter
                 = new ArrayAdapter<>(this, R.layout.list_item, android.R.id.text1, files);
         listview.setAdapter(adapter);
+
+        listview.setOnItemLongClickListener(
+                new AdapterView.OnItemLongClickListener() {
+                    @Override
+                    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+
+                        /* IMPLEMENT RENAMING SAVED FILES */
+
+                        // ListView Clicked item index
+                        int itemPosition = position;
+                        view.setSelected(true);
+                        // ListView Clicked item value
+                        itemValue = (String) listview.getItemAtPosition(position);
+                        System.out.println("click: Position: " + itemPosition + ", ListItem: " + itemValue);
+                        return true;
+                    }
+                });
+
         listview.setOnItemClickListener(
                 new AdapterView.OnItemClickListener() {
                     @Override
@@ -66,8 +78,6 @@ public class FileListActivity extends AppCompatActivity{
                         // ListView Clicked item value
                         itemValue = (String) listview.getItemAtPosition(position);
                         System.out.println("click: Position: " + itemPosition + ", ListItem: " + itemValue);
-
-
                     }
                 });
     }
@@ -95,20 +105,25 @@ public class FileListActivity extends AppCompatActivity{
         return true;
     }
 
-    public void readFileO (View view) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == 1)
+            finish();
+    }
+
+    public void readFile(View view) {
         if (itemValue == null) {
             final AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
             alertDialog.setIcon(R.mipmap.ic_launcher);
             alertDialog.setMessage("Please choose a file!")
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                         }
                     });
             alertDialog.show();
         }
         else  {
-            Intent intent = new Intent(this, ResultActivity2.class);
-            startActivity(intent);
+            Intent intent = new Intent(this, LoadResultActivity.class);
+            startActivityForResult(intent, 1);
         }
     }
 

@@ -2,7 +2,6 @@
     android:layout_height="match_parent"
     android:layout_width="fill_parent">
 
-
     <TextView
         android:id="@android:id/text1"
         android:layout_width="match_parent"
@@ -12,9 +11,10 @@
         android:minHeight="?android:attr/listPreferredItemHeight"
         android:padding="8dp"
         android:focusable="false"
-
         android:textColor="@android:color/black"
-        android:textSize="20sp" >
+        android:textSize="20sp"
+        android:longClickable="false"
+        android:clickable="false">
     </TextView>
 
 </LinearLayout>

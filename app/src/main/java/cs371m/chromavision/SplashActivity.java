@@ -27,7 +27,7 @@ public class SplashActivity extends AppCompatActivity {
         alertDialog.setIcon(R.mipmap.ic_launcher);
         alertDialog.setMessage("Welcome to ChromaVision, an app intended to help those with color vision deficiency or those just wondering what colors compose something.\n\nThis app requires camera and storage permissions in order to work correctly. The camera permission is necessary to allow you to take pictures of objects nearby to evaluate their colors. The storage permission is necessary to load images you already have stored on your device and to store data that ChromaVision will generate.\n\nIf your device does not have a camera, you can still use the app by utilizing this method of loading images saved to your device as long as you accept that permission. If you later decide to revoke permissions from the app, it may result in erroneous behavior so do so at your own risk!\n\nIf this is your first time using the app, why don't you check out the Tutorial on the next page by tapping on the \"Tutorial\" button!");
 
-        final SharedPreferences prefs= PreferenceManager.getDefaultSharedPreferences(this);
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         Log.d(TAG, "Prefs contains ViewedWelcome if true: " + prefs.contains("ViewedWelcome"));
         Log.d(TAG, "Prefs bool ViewedWelcome is : " + prefs.getBoolean("ViewedWelcome", false));
         if(!prefs.contains("ViewedWelcome") || (prefs.contains("ViewedWelcome") && !prefs.getBoolean("ViewedWelcome", false))) {
@@ -43,12 +43,17 @@ public class SplashActivity extends AppCompatActivity {
                         editor.putBoolean("PreciseMode", true);
 
                     editor.apply();
-
                 }
             });
 
-            alertDialog.show();
+                alertDialog.show();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+
+        super.onDestroy();
     }
 
     /* Called when the user clicks the 'click here to start' button. */

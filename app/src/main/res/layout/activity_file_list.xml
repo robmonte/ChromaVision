@@ -19,20 +19,23 @@
             android:gravity="center_vertical"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:layout_marginStart="@dimen/activity_horizontal_margin"
-            android:text="Please pick a file:"
+            android:text="Choose past data to load:"
             android:textSize="20sp"
             android:textColorHighlight="@color/colorPrimary"/>
 
+
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
             android:id="@+id/OK"
-            android:text="OK"
+            android:text="Load"
             android:gravity="right|center_vertical"
+            android:layout_gravity="right"
             android:paddingEnd="20dp"
             android:paddingRight="20dp"
             android:clickable="true"
-            android:onClick="readFileO"
+            android:onClick="readFile"
             android:textSize="20sp"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:layout_marginStart="@dimen/activity_horizontal_margin"

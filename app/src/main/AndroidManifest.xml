@@ -36,7 +36,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme"/>
         <activity
-            android:name=".ResultActivity2"
+            android:name=".LoadResultActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme"/>
 

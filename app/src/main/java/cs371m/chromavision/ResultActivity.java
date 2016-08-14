@@ -65,7 +65,6 @@ public class ResultActivity extends AppCompatActivity {
     private Integer saved;
     private EditText input;
     private FileInputStream fis;
-    private MainMenuActivity mMian;
     private Uri pictureUri;
     private boolean doneAsync;
 
@@ -320,6 +319,11 @@ public class ResultActivity extends AppCompatActivity {
     @Override
     public void onBackPressed()
     {
+        File delete = new File(pictureUri.getPath());
+
+        if (delete.exists())
+            delete.delete();
+
         if (mRunPicture != null)
             mRunPicture.cancel(true);
 
@@ -362,8 +366,14 @@ public class ResultActivity extends AppCompatActivity {
                                 "Saved!",Toast.LENGTH_LONG).show();
                         input.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
                         fileName = input.getText().toString();
+                        int length = fileName.length();
+                        System.out.println(fileName);
+                        System.out.println("char at end " + fileName.charAt(length-1));
+                        while (fileName.charAt(fileName.length()-1) == ' ')
+                            fileName = fileName.substring(0, fileName.length()-1);
+
                         if(fileName.length() > 4) {
-                            String end = fileName.substring(fileName.length() - 4);
+                            String end = fileName.substring(length - 4);
                             System.out.println("******end is " + end);
                             if (!end.equals(".jpg"))
                                 fileName += ".jpg";
@@ -446,7 +456,12 @@ public class ResultActivity extends AppCompatActivity {
 
                 saved = 1;
 
-            } catch (FileNotFoundException e) {
+                File delete = new File(pictureUri.getPath());
+                System.out.println("Deleting " + delete.getAbsolutePath());
+                delete.delete();
+
+            }
+            catch (FileNotFoundException e) {
                 Log.d(TAG, "Exception trying to open file: " + e);
             }
 
@@ -595,7 +610,6 @@ public class ResultActivity extends AppCompatActivity {
     class GenerateColorDataAsync extends AsyncTask<Uri, Integer, StringBuilder> {
 
 
-
         @Override
         protected StringBuilder doInBackground(Uri... params) {
 
@@ -603,7 +617,6 @@ public class ResultActivity extends AppCompatActivity {
 
             int width = intent.getIntExtra("width", 1);
             int height = intent.getIntExtra("height", 1);
-
 
             InputStream cameraInput = null;
 

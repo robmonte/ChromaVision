@@ -32,7 +32,7 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 
 
-public class ResultActivity2 extends AppCompatActivity {
+public class LoadResultActivity extends AppCompatActivity {
 
     private static final String TAG = "Result Activity";
 
@@ -46,6 +46,7 @@ public class ResultActivity2 extends AppCompatActivity {
     private EditText input;
     private FileInputStream fis;
     private ResultActivity mResult;
+    private Uri file;
 
     private enum COLORS { DARK_RED, RED, LIGHT_RED,
         DARK_GREEN, GREEN, LIGHT_GREEN,
@@ -75,14 +76,13 @@ public class ResultActivity2 extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         Intent intent = getIntent();
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_result2);
+        setContentView(R.layout.activity_load_result);
         mResult = new ResultActivity();
 
         mTextView = (TextView)findViewById(R.id.colorDataView);
 
         readFile();
 
-        System.out.println("helllllo!");
         final ImageView mImageView = (ImageView) findViewById(R.id.resultImage);
 
 
@@ -286,6 +286,7 @@ public class ResultActivity2 extends AppCompatActivity {
         try {
 
             Uri uri = Uri.fromFile(new File(getFilesDir().toString() + "/" + mFile.itemValue));
+            file = uri;
 
 //            InputStream in = null;
 //
@@ -330,33 +331,64 @@ public class ResultActivity2 extends AppCompatActivity {
         }
         catch (IOException e)
         {
-            ;
+            e.printStackTrace();
         }
     }
 
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        super.onCreateOptionsMenu(menu);
-//        saved = 0;
-//        MenuInflater inflater = getMenuInflater();
-//        inflater.inflate(R.menu.menu_result_page, menu);
-//
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//
-//        ScrollView resultString = (ScrollView) findViewById(R.id.resultString);
-//        if (item.getItemId() == R.id.save)
-//            nameFile(resultString);
-//        return true;
-//    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        saved = 0;
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_load_page, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        ScrollView resultString = (ScrollView) findViewById(R.id.resultString);
+        if (item.getItemId() == R.id.load)
+            deleteFile(resultString);
+        return true;
+    }
+
+    private void deleteFile(View v) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setIcon(R.mipmap.ic_launcher);
+        builder.setMessage("Are you sure you want to delete this?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int id) {
+
+                        Toast.makeText(getApplicationContext(),
+                                "Deleted!",Toast.LENGTH_LONG).show();
+                        //fileName = input.getText().toString();
+
+                        File delete = new File(file.getPath());
+                        File deleteData = new File(file.getPath() + ".Chroma");
+                        delete.delete();
+                        deleteData.delete();
+                        setResult(1);
+                        finish();
+                    }
+                })
+                .setNegativeButton("Nope", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int id) {
+
+                        // User cancelled the dialog
+                        Toast.makeText(getApplicationContext(),
+                                "Canceled",Toast.LENGTH_LONG).show();
+                    }
+                });
+
+        builder.show();
+    }
 
     protected void nameFile(View v) {
-
-//
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setIcon(R.mipmap.ic_launcher);
         builder.setMessage("Please set a file name:")
@@ -387,6 +419,7 @@ public class ResultActivity2 extends AppCompatActivity {
         fname.show();
 
     }
+
     private void saveFile() {
         if (saved == 0) {
             System.out.println("Are you actually saving file?");
