@@ -358,7 +358,7 @@ public class ResultActivity extends AppCompatActivity {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setIcon(R.mipmap.ic_launcher);
         builder.setMessage("Please set a file name:")
-                .setPositiveButton("Okay!", new DialogInterface.OnClickListener() {
+                .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int id) {
 
@@ -446,7 +446,7 @@ public class ResultActivity extends AppCompatActivity {
 
 
                 FileOutputStream fosText
-                        = openFileOutput(fileName + ".Chroma", MODE_PRIVATE);
+                        = openFileOutput(fileName + ".chroma", MODE_PRIVATE);
 
                 PrintStream writer = new PrintStream(fosText);
                 writer.println(resultPicture);
@@ -497,8 +497,8 @@ public class ResultActivity extends AppCompatActivity {
 
             }
 
-//            Uri uri = Uri.fromFile(new File(fileName + ".Chroma"));
-            fis = openFileInput(mFile.itemValue + ".Chroma");
+//            Uri uri = Uri.fromFile(new File(fileName + ".chroma"));
+            fis = openFileInput(mFile.itemValue + ".chroma");
             BufferedReader reader;
             reader = new BufferedReader(new InputStreamReader(fis));
             System.out.println("Reading File line by line using Bufferreader");

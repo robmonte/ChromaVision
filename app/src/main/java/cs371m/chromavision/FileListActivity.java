@@ -2,17 +2,21 @@ package cs371m.chromavision;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -32,14 +36,17 @@ public class FileListActivity extends AppCompatActivity{
 
     public int opened;
     public static String itemValue;
+    public String toPictureName;
+    public String toDataName;
+    public EditText input;
+    public File fromPicture;
+    public File fromData;
 
     @Override
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         setContentView(R.layout.activity_file_list);
 //        Toolbarbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-
-        System.out.println("hey are you okay?\n");
 
         itemValue = null;
 
@@ -58,12 +65,19 @@ public class FileListActivity extends AppCompatActivity{
 
                         /* IMPLEMENT RENAMING SAVED FILES */
 
+                        FileListActivity mFile = new FileListActivity();
+
+                        System.out.println("++++++++++++" + getFilesDir().toString());
+
                         // ListView Clicked item index
                         int itemPosition = position;
                         view.setSelected(true);
                         // ListView Clicked item value
                         itemValue = (String) listview.getItemAtPosition(position);
-                        System.out.println("click: Position: " + itemPosition + ", ListItem: " + itemValue);
+                        Uri uri = Uri.fromFile(new File(getFilesDir().toString() + "/" + itemValue));
+                        System.out.println("click: Position: " + itemPosition + ", ListItem: " + itemValue + ", uri: " + uri.toString());
+
+                        renameFile(uri);
                         return true;
                     }
                 });
@@ -108,6 +122,73 @@ public class FileListActivity extends AppCompatActivity{
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == 1)
             finish();
+    }
+
+    public void renameFile(Uri uri) {
+        fromPicture = new File(uri.getPath());
+        fromData = new File(uri.getPath() + ".chroma");
+
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        input = new EditText(this);
+        builder.setIcon(R.mipmap.ic_launcher);
+        builder.setMessage("Please set a file name:")
+                .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int id) {
+
+                        String fileName;
+                        Toast.makeText(getApplicationContext(),
+                                "Renamed!",Toast.LENGTH_LONG).show();
+                        input.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+                        fileName = input.getText().toString();
+                        int length = fileName.length();
+                        System.out.println(fileName);
+                        System.out.println("char at end " + fileName.charAt(length-1));
+                        while (fileName.charAt(fileName.length()-1) == ' ')
+                            fileName = fileName.substring(0, fileName.length()-1);
+
+                        if(fileName.length() > 4) {
+                            String end = fileName.substring(length - 4);
+                            System.out.println("******end is " + end);
+                            if (!end.equals(".jpg"))
+                                fileName += ".jpg";
+                        }
+                        else
+                            fileName += ".jpg";
+
+                        toPictureName = fileName;
+                        toDataName = fileName + ".chroma";
+
+                        File toPicture = new File(getFilesDir().toString() + "/" + toPictureName);
+                        File toData = new File(getFilesDir().toString() + "/" + toDataName);
+
+                        System.out.println("rename picTo abs path is: " + toPicture.getAbsolutePath());
+                        System.out.println("rename dataTo abs path is: " + toData.getAbsolutePath());
+
+                        fromPicture.renameTo(toPicture);
+                        fromData.renameTo(toData);
+
+                        finish();
+                        startActivity(getIntent());
+                    }
+                })
+                .setNegativeButton("Nevermind", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int id) {
+
+                        // User cancelled the dialog
+                        Toast.makeText(getApplicationContext(),
+                                "Canceled!",Toast.LENGTH_LONG).show();
+                    }
+                });
+
+        // Create the AlertDialog object and return it
+        AlertDialog fname = builder.create();
+        input = new EditText(this);
+        fname.setView(input);
+        fname.show();
+
     }
 
     public void readFile(View view) {

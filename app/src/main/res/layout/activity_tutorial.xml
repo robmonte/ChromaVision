@@ -77,7 +77,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="To review photos that have already been processed through ChromaVision, simply click on 'LOAD PAST IMAGE DATA'. This will bring up a neat list of all the files you have processed and chosen to save to your device. When you save any data you wish to keep, you will be prompted to name it with any name you wish, so this list is a recognizable list of words chosen by you to help you remember exactly what you are looking for."
+                android:text="To review photos that have already been processed through ChromaVision, simply click on 'LOAD PAST IMAGE DATA'. This will bring up a neat list of all the files you have processed and chosen to save to your device. When you save any data you wish to keep, you will be prompted to name it with any name you wish, so this list is a recognizable list of words chosen by you to help you remember exactly what you are looking for. After reviewing the results if you decide you no longer need it, a 'DELETE' button will be in the upper-right hand corner of the screen. If you want to rename any of your saved data, then simply tap and hold on the filename in the list that you want to change and enter a new name for it."
                 android:textSize="18sp"
                 android:id="@+id/extra"
                 android:layout_below="@id/LoadLast" />

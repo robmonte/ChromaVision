@@ -279,13 +279,12 @@ public class LoadResultActivity extends AppCompatActivity {
     }
 
     private void readFile() {
-        FileListActivity mFile = new FileListActivity();
         File dir = this.getFilesDir();
         System.out.println("++++++++++++" + getFilesDir().toString());
 
         try {
 
-            Uri uri = Uri.fromFile(new File(getFilesDir().toString() + "/" + mFile.itemValue));
+            Uri uri = Uri.fromFile(new File(getFilesDir().toString() + "/" + FileListActivity.itemValue));
             file = uri;
 
 //            InputStream in = null;
@@ -309,8 +308,8 @@ public class LoadResultActivity extends AppCompatActivity {
 
             }
 
-//            Uri uri = Uri.fromFile(new File(fileName + ".Chroma"));
-            fis = openFileInput(mFile.itemValue + ".Chroma");
+//            Uri uri = Uri.fromFile(new File(fileName + ".chroma"));
+            fis = openFileInput(FileListActivity.itemValue + ".chroma");
             BufferedReader reader;
             reader = new BufferedReader(new InputStreamReader(fis));
             System.out.println("Reading File line by line using Bufferreader");
@@ -368,7 +367,7 @@ public class LoadResultActivity extends AppCompatActivity {
                         //fileName = input.getText().toString();
 
                         File delete = new File(file.getPath());
-                        File deleteData = new File(file.getPath() + ".Chroma");
+                        File deleteData = new File(file.getPath() + ".chroma");
                         delete.delete();
                         deleteData.delete();
                         setResult(1);
@@ -388,60 +387,60 @@ public class LoadResultActivity extends AppCompatActivity {
         builder.show();
     }
 
-    protected void nameFile(View v) {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setIcon(R.mipmap.ic_launcher);
-        builder.setMessage("Please set a file name:")
-                .setPositiveButton("Okay!", new DialogInterface.OnClickListener() {
+//    protected void nameFile(View v) {
+//        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//        builder.setIcon(R.mipmap.ic_launcher);
+//        builder.setMessage("Please set a file name:")
+//                .setPositiveButton("Okay!", new DialogInterface.OnClickListener() {
+//
+//                    public void onClick(DialogInterface dialog, int id) {
+//
+//                        Toast.makeText(getApplicationContext(),
+//                                "Saved!",Toast.LENGTH_LONG).show();
+//                        fileName = input.getText().toString();
+//                        saveFile();
+//                    }
+//                })
+//                .setNegativeButton("Nevermind", new DialogInterface.OnClickListener() {
+//
+//                    public void onClick(DialogInterface dialog, int id) {
+//
+//                        // User cancelled the dialog
+//                        Toast.makeText(getApplicationContext(),
+//                                "Canceled",Toast.LENGTH_LONG).show();
+//                    }
+//                });
+//
+//        // Create the AlertDialog object and return it
+//        AlertDialog fname = builder.create();
+//        input = new EditText(this);
+//        fname.setView(input);
+//        fname.show();
+//
+//    }
 
-                    public void onClick(DialogInterface dialog, int id) {
-
-                        Toast.makeText(getApplicationContext(),
-                                "Saved!",Toast.LENGTH_LONG).show();
-                        fileName = input.getText().toString();
-                        saveFile();
-                    }
-                })
-                .setNegativeButton("Nevermind", new DialogInterface.OnClickListener() {
-
-                    public void onClick(DialogInterface dialog, int id) {
-
-                        // User cancelled the dialog
-                        Toast.makeText(getApplicationContext(),
-                                "Canceled",Toast.LENGTH_LONG).show();
-                    }
-                });
-
-        // Create the AlertDialog object and return it
-        AlertDialog fname = builder.create();
-        input = new EditText(this);
-        fname.setView(input);
-        fname.show();
-
-    }
-
-    private void saveFile() {
-        if (saved == 0) {
-            System.out.println("Are you actually saving file?");
-            System.out.println(fileName);
-            try {
-                FileOutputStream fos
-                        = openFileOutput(fileName, MODE_PRIVATE);
-
-                PrintStream writer = new PrintStream(fos);
-//            Random r = new Random();
-                writer.println(resultPicture);
-                System.out.println(resultPicture);
-                writer.close();
-                fis = openFileInput(fileName);
-
-                saved = 1;
-
-            } catch (FileNotFoundException e) {
-                Log.d(TAG, "Exception trying to open file: " + e);
-            }
-
-        }
-    }
+//    private void saveFile() {
+//        if (saved == 0) {
+//            System.out.println("Are you actually saving file?");
+//            System.out.println(fileName);
+//            try {
+//                FileOutputStream fos
+//                        = openFileOutput(fileName, MODE_PRIVATE);
+//
+//                PrintStream writer = new PrintStream(fos);
+////            Random r = new Random();
+//                writer.println(resultPicture);
+//                System.out.println(resultPicture);
+//                writer.close();
+//                fis = openFileInput(fileName);
+//
+//                saved = 1;
+//
+//            } catch (FileNotFoundException e) {
+//                Log.d(TAG, "Exception trying to open file: " + e);
+//            }
+//
+//        }
+//    }
 
 }
