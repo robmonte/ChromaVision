@@ -373,7 +373,7 @@ public class ResultActivity extends AppCompatActivity {
 
                     public void onClick(DialogInterface dialog, int id) {
 
-                        // User cancelled the dialog
+                        // User canceled the dialog
                         Toast.makeText(getApplicationContext(),
                                 "Canceled!",Toast.LENGTH_LONG).show();
                     }

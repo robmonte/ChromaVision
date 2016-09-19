@@ -160,7 +160,7 @@ public class MainMenuActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
             case REQUEST_CODE_PERMISSION: {
-                // If request is cancelled, the result arrays are empty.
+                // If request is canceled, the result arrays are empty.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
                     // permission was granted, yay! Do the
@@ -345,7 +345,7 @@ public class MainMenuActivity extends AppCompatActivity {
 
                 }
                 else if (resultCode == RESULT_CANCELED) {
-                    // User cancelled the image capture
+                    // User canceled the image capture
 
                 }
                 else {

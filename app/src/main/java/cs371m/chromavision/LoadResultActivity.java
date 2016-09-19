@@ -103,7 +103,7 @@ public class LoadResultActivity extends AppCompatActivity {
 
                         bitmap = mImageView.getDrawingCache();
                         if(y < 0 || x < 0 || y > bitmap.getHeight() || x > bitmap.getWidth()) {
-                            Log.d(TAG, "Touched out of bounds!");
+                            // Touched outside of the image boundaries
                         }
                         else {
                             int pixel = bitmap.getPixel(x, y);
@@ -366,7 +366,7 @@ public class LoadResultActivity extends AppCompatActivity {
 
                     public void onClick(DialogInterface dialog, int id) {
 
-                        // User cancelled the dialog
+                        // User canceled the dialog
                         Toast.makeText(getApplicationContext(),
                                 "Canceled",Toast.LENGTH_LONG).show();
                     }
