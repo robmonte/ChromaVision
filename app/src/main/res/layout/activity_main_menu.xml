@@ -8,22 +8,13 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="cs371m.chromavision.SplashActivity" >
+    tools:context="cs371m.chromavision.SplashActivity"
+    android:background="@drawable/grey_squares_repeating">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.3" >
-
-        <!--<Button-->
-        <!--android:layout_width="215dp"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="@string/capture_a_new_picture"-->
-        <!--android:textSize="26sp"-->
-        <!--android:id="@+id/button1"-->
-        <!--android:onClick="takeAPicture"-->
-        <!--android:layout_centerHorizontal="true"-->
-        <!--android:layout_centerVertical="true" />-->
 
         <ImageView
             android:layout_width="225dp"
@@ -32,7 +23,17 @@
             android:onClick="takeAPicture"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:src="@drawable/capture_picture_button" />
+            android:src="@drawable/new_picture" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Capture a picture using your camera"
+            android:id="@+id/textView3"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/button1"
+            android:layout_alignParentBottom="true" />
 
     </RelativeLayout>
 
@@ -42,7 +43,7 @@
         android:layout_weight="0.3" >
 
         <ImageView
-            android:layout_width="215dp"
+            android:layout_width="225dp"
             android:layout_height="wrap_content"
             android:text="@string/open_image_from_gallery"
             android:textSize="26sp"
@@ -50,7 +51,17 @@
             android:onClick="pickFromGallery"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:src="@drawable/open_gallery_button"/>
+            android:src="@drawable/image_gallery"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Open an image already on your device"
+            android:id="@+id/textView4"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/button2" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -59,7 +70,7 @@
         android:layout_weight="0.3" >
 
         <ImageView
-            android:layout_width="215dp"
+            android:layout_width="225dp"
             android:layout_height="wrap_content"
             android:text="@string/load_past_image_data"
             android:textSize="26sp"
@@ -67,7 +78,17 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:onClick="openFolder"
-            android:src="@drawable/load_past_button" />
+            android:src="@drawable/view_saved" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Load color data that you've saved"
+            android:id="@+id/textView5"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/button3" />
 
     </RelativeLayout>
 

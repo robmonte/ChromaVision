@@ -6,8 +6,10 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -74,7 +76,6 @@ public class LoadResultActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Intent intent = getIntent();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_load_result);
         mResult = new ResultActivity();
@@ -86,50 +87,53 @@ public class LoadResultActivity extends AppCompatActivity {
         final ImageView mImageView = (ImageView) findViewById(R.id.resultImage);
 
 
+        if (mImageView != null) {
+            mImageView.setDrawingCacheEnabled(true);
+        }
 
-        mImageView.setDrawingCacheEnabled(true);
+        if (mImageView != null) {
+            mImageView.setOnTouchListener( new View.OnTouchListener(){
+                @Override
+                public boolean onTouch(View view, MotionEvent motionEvent){
 
-        mImageView.setOnTouchListener( new View.OnTouchListener(){
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent){
+                    if (motionEvent.getAction() == MotionEvent.ACTION_DOWN || motionEvent.getAction() == MotionEvent.ACTION_MOVE){
 
-                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN || motionEvent.getAction() == MotionEvent.ACTION_MOVE){
+                        int x = (int)motionEvent.getX();
+                        int y = (int)motionEvent.getY();
 
-                    int x = (int)motionEvent.getX();
-                    int y = (int)motionEvent.getY();
+                        bitmap = mImageView.getDrawingCache();
+                        if(y < 0 || x < 0 || y > bitmap.getHeight() || x > bitmap.getWidth()) {
+                            Log.d(TAG, "Touched out of bounds!");
+                        }
+                        else {
+                            int pixel = bitmap.getPixel(x, y);
+                            int redValue = Color.red(pixel);
+                            int blueValue = Color.blue(pixel);
+                            int greenValue = Color.green(pixel);
 
-                    bitmap = mImageView.getDrawingCache();
-                    if(y < 0 || x < 0 || y > bitmap.getHeight() || x > bitmap.getWidth()) {
+                            TextView clickPixelBackground = (TextView) findViewById(R.id.clickPixel);
+                            TextView clickPixelLocation = (TextView) findViewById(R.id.clickPixelText);
+                            LinearLayout border = (LinearLayout) findViewById(R.id.clickPixelBorder);
+                            if (border != null) {
+                                border.setBackgroundColor(Color.BLACK);
+                            }
+                            if (clickPixelBackground != null) {
+                                clickPixelBackground.setBackgroundColor(Color.rgb(redValue, greenValue, blueValue));
+                            }
 
-
-
+                            float [] Hsb = new float[3];
+                            Color.RGBToHSV(redValue,greenValue,blueValue, Hsb);
+                            String loc = "(" + x + ", " + y + ") is " + getTouchedColor(Hsb).toString();
+                            if (clickPixelLocation != null) {
+                                clickPixelLocation.setText(loc);
+                            }
+                        }
                     }
-                    else {
-                        int pixel = bitmap.getPixel(x, y);
-                        int redValue = Color.red(pixel);
-                        int blueValue = Color.blue(pixel);
-                        int greenValue = Color.green(pixel);
-                        //System.out.println();
-
-                        TextView clickPixelBackground = (TextView) findViewById(R.id.clickPixel);
-                        TextView clickPixelLocation = (TextView) findViewById(R.id.clickPixelText);
-                        LinearLayout border = (LinearLayout) findViewById(R.id.clickPixelBorder);
-                        border.setBackgroundColor(Color.BLACK);
-                        clickPixelBackground.setBackgroundColor(Color.rgb(redValue, greenValue, blueValue));
-                        System.out.println(x + " , " + y);
-                        System.out.println("red =" + redValue + "blue = " + blueValue + "green = " + greenValue);
-                        //String loc = "(" + x + ", " + y + "): ";
-                        // clickPixelLocation.setText(loc);
-                        float [] Hsb = new float[3];
-                        Color.RGBToHSV(redValue,greenValue,blueValue, Hsb);
-                        String loc = "(" + x + ", " + y + ") is " + getTouchedColor(Hsb).toString();
-                        clickPixelLocation.setText(loc);
-                    }
+                    return true;
                 }
-                return true;
-            }
 
-        });
+            });
+        }
 
 
     }
@@ -153,7 +157,7 @@ public class LoadResultActivity extends AppCompatActivity {
             return COLORS.valueOf("GREY");
         }
         else {
-            //System.out.println(deg);
+            //Log.d(TAG, deg);
             if (deg >= 335 || deg <  11) {
                 if (deg < 350 && deg > 11 && hsb[1] < 0.65 && hsb[2] >= 0.5) {
                     // Pink
@@ -279,53 +283,37 @@ public class LoadResultActivity extends AppCompatActivity {
     }
 
     private void readFile() {
-        File dir = this.getFilesDir();
-        System.out.println("++++++++++++" + getFilesDir().toString());
-
         try {
 
             Uri uri = Uri.fromFile(new File(getFilesDir().toString() + "/" + FileListActivity.itemValue));
             file = uri;
 
-//            InputStream in = null;
-//
-//            try {
-//                in = getContentResolver().openInputStream(uri);
-//            }
-//            catch (FileNotFoundException e) {
-//                e.printStackTrace();
-//            }
-//
-//            Bitmap image = BitmapFactory.decodeStream(in);
             ImageView imageView = (ImageView) findViewById(R.id.resultImage);
-            //imageView.setImageBitmap(image);
 
             try {
-                imageView.setImageURI(uri);
+                if (imageView != null) {
+                    imageView.setImageURI(uri);
+                }
             }
-            catch (NullPointerException n){
-                System.out.println("Reading File line by line using Bufferreader");
+            catch (NullPointerException e){
+                e.printStackTrace();
 
             }
 
-//            Uri uri = Uri.fromFile(new File(fileName + ".chroma"));
             fis = openFileInput(FileListActivity.itemValue + ".chroma");
             BufferedReader reader;
             reader = new BufferedReader(new InputStreamReader(fis));
-            System.out.println("Reading File line by line using Bufferreader");
+
             String line = reader.readLine();
             StringBuilder output = new StringBuilder();
 
             while (line != null) {
-                System.out.println(line);
                 output.append(line);
                 output.append("\n");
                 line = reader.readLine();
             }
 
             String str = output.toString();
-
-            System.out.println("STR IS " + str + "    ***********");
             mTextView.setText(str);
         }
         catch (IOException e)
@@ -386,61 +374,5 @@ public class LoadResultActivity extends AppCompatActivity {
 
         builder.show();
     }
-
-//    protected void nameFile(View v) {
-//        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//        builder.setIcon(R.mipmap.ic_launcher);
-//        builder.setMessage("Please set a file name:")
-//                .setPositiveButton("Okay!", new DialogInterface.OnClickListener() {
-//
-//                    public void onClick(DialogInterface dialog, int id) {
-//
-//                        Toast.makeText(getApplicationContext(),
-//                                "Saved!",Toast.LENGTH_LONG).show();
-//                        fileName = input.getText().toString();
-//                        saveFile();
-//                    }
-//                })
-//                .setNegativeButton("Nevermind", new DialogInterface.OnClickListener() {
-//
-//                    public void onClick(DialogInterface dialog, int id) {
-//
-//                        // User cancelled the dialog
-//                        Toast.makeText(getApplicationContext(),
-//                                "Canceled",Toast.LENGTH_LONG).show();
-//                    }
-//                });
-//
-//        // Create the AlertDialog object and return it
-//        AlertDialog fname = builder.create();
-//        input = new EditText(this);
-//        fname.setView(input);
-//        fname.show();
-//
-//    }
-
-//    private void saveFile() {
-//        if (saved == 0) {
-//            System.out.println("Are you actually saving file?");
-//            System.out.println(fileName);
-//            try {
-//                FileOutputStream fos
-//                        = openFileOutput(fileName, MODE_PRIVATE);
-//
-//                PrintStream writer = new PrintStream(fos);
-////            Random r = new Random();
-//                writer.println(resultPicture);
-//                System.out.println(resultPicture);
-//                writer.close();
-//                fis = openFileInput(fileName);
-//
-//                saved = 1;
-//
-//            } catch (FileNotFoundException e) {
-//                Log.d(TAG, "Exception trying to open file: " + e);
-//            }
-//
-//        }
-//    }
 
 }

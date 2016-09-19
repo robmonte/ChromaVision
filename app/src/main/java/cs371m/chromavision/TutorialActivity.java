@@ -14,12 +14,5 @@ public class TutorialActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tutorial);
-
-//        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-//        SharedPreferences.Editor editor = prefs.edit();
-//        editor.putBoolean("ViewedTutorial", false);
-//        editor.apply();
-
-//        Log.d(TAG, "ViewedTutorial is now " + prefs.getBoolean("ViewedTutorial", false));
     }
 }

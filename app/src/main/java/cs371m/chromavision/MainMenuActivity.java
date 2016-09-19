@@ -13,6 +13,7 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -21,8 +22,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.theartofdev.edmodo.cropper.CropImage;
@@ -56,6 +59,8 @@ public class MainMenuActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
 
+        buttonListeners();
+
         int cameraPermissionCheck = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.CAMERA);
         int storagePermissionCheck = ContextCompat.checkSelfPermission(this,
@@ -77,7 +82,6 @@ public class MainMenuActivity extends AppCompatActivity {
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean hideTutorial = prefs.getBoolean("ViewedTutorial", false);
-        System.out.println("hide tutorial is " + hideTutorial);
         if (hideTutorial) {
             Button tutorialButton = (Button)findViewById(R.id.button4);
             if (tutorialButton != null) {
@@ -134,7 +138,6 @@ public class MainMenuActivity extends AppCompatActivity {
                 boolean hideTutorial = prefs.getBoolean("ViewedTutorial", false);
                 item.setChecked(hideTutorial);
                 editor.putBoolean("ViewedTutorial", !hideTutorial);
-                System.out.println("on select, hidetutorial is " + hideTutorial);
                 editor.apply();
                 Button tutorialButton = (Button)findViewById(R.id.button4);
                 if (tutorialButton != null) {
@@ -154,13 +157,11 @@ public class MainMenuActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
             case REQUEST_CODE_PERMISSION: {
                 // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
@@ -193,7 +194,7 @@ public class MainMenuActivity extends AppCompatActivity {
         // get the local time presentation
         Locale mylocale = new Locale("en");
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmssSS", mylocale).format(new Date());
-        System.out.println(timeStamp);
+        Log.d(TAG, timeStamp);
 
         storageDir = getAlbumStorageDir("ChromaVision");
         return new File(storageDir + "/" + timeStamp + ".jpg");
@@ -206,18 +207,6 @@ public class MainMenuActivity extends AppCompatActivity {
      * requesting an image from an existing camera application.
      **/
     public void takeAPicture(View view) {
-
-//        int permissionCheck = ContextCompat.checkSelfPermission(this,
-//                Manifest.permission.CAMERA);
-//
-//        if (permissionCheck == PackageManager.PERMISSION_DENIED) {
-//            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
-//                Log.d(TAG, "Camera permission denied!");
-//            }
-//            else {
-//                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE_PERMISSION);
-//            }
-//        }
 
         Log.d(TAG, "After the requests!");
 
@@ -237,8 +226,6 @@ public class MainMenuActivity extends AppCompatActivity {
             Log.d(TAG, "takeAPicture: " + photoUri.toString());
 
             mCameraImageUri = photoUri;
-
-            //CropImage.activity(photoUri).setGuidelines(CropImageView.Guidelines.ON).start(this);
 
             intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
             startActivityForResult(intent, CAMERA_REQUEST_CODE);
@@ -265,17 +252,9 @@ public class MainMenuActivity extends AppCompatActivity {
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
 
-        System.out.println("choosing");
-
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), GALLERY_REQUEST_CODE);
 
     }
-
-//    public void pickFromGallery(View view) {
-////        Intent intent = new Intent();
-//        Intent intent = new Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-//        startActivityForResult(intent, GALLERY_REQUEST_CODE);
-//    }
 
     /**
      * To receive the result from the subsequent activity
@@ -286,10 +265,9 @@ public class MainMenuActivity extends AppCompatActivity {
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        System.out.println("inside onActivityResult");
 
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
-            System.out.println("Inside CROP_IMAGE_ACTIVITY_REQUEST");
+
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             if (resultCode == RESULT_OK) {
                 Uri croppedImage = result.getUri();
@@ -301,8 +279,6 @@ public class MainMenuActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 Bitmap scale = BitmapFactory.decodeStream(cameraInput);
-
-                System.out.println(croppedImage);
 
                 File delete = new File(croppedImage.getPath());
                 delete.delete();
@@ -331,16 +307,10 @@ public class MainMenuActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                //File deleteCamera = new File(mCameraImageUri.getPath());
-                //System.out.println("Would delete " + deleteCamera.getAbsolutePath());
-                //deleteCamera.delete();
-
                 Uri fileUri = android.net.Uri.parse(file.toURI().toString());
 
-                System.out.println("pictureCrop is " + fileUri.toString());
                 Intent cropped = new Intent(this, ResultActivity.class);
                 cropped.putExtra("pictureUri", fileUri);
-                System.out.println(scale.getWidth() + " " + scale.getHeight());
                 cropped.putExtra("width", scale.getWidth());
                 cropped.putExtra("height", scale.getHeight());
 
@@ -355,68 +325,24 @@ public class MainMenuActivity extends AppCompatActivity {
 
         //galleryAddPic();
         if (data == null) {
-            System.out.println("No data available.");
+            Log.d(TAG, "No data available.");
         }
         if (resultCode == Activity.RESULT_OK) {
             try {
                 // Check which request we're responding to
                 if (requestCode == CAMERA_REQUEST_CODE) {
-                    //galleryAddPic();
-                    System.out.println("Inside CAMERA_REQUEST_CODE");
-
-                    System.out.println(mCameraImageUri);
-
                     CropImage.activity(mCameraImageUri).setGuidelines(CropImageView.Guidelines.ON).start(this);
-
                 }
                 else if (requestCode == GALLERY_REQUEST_CODE) {
-                    System.out.println("Inside GALLERY_REQUEST_CODE");
-
                     // Get the image from data
                     Uri selectedImage = null;
                     if (data != null) {
                         selectedImage = data.getData();
                     }
 
-                    System.out.println("selectedImage URI: " + selectedImage);
-
                     CropImage.activity(selectedImage).setGuidelines(CropImageView.Guidelines.ON).start(this);
 
 
-
-                    // Use the scaled bitmap instead of the gallery one!!!!!!!!!! Fix this!! OR IT MIGHT BE SCALING IN THE RETURN OF CROP
-
-
-//                    InputStream galleryInput = null;
-//                    if (selectedImage != null) {
-//                        galleryInput = getContentResolver().openInputStream(selectedImage);
-//                    }
-//
-//                    Bitmap scale = BitmapFactory.decodeStream(galleryInput);
-//
-//                    scale = resizeImageToScreen(scale);
-//
-//
-//                    storageDir = getAlbumStorageDir("ChromaVision");
-//                    Locale mylocale = new Locale("en");
-//                    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", mylocale).format(new Date());
-//                    File file = new File(storageDir, "scaledgallery" + timeStamp + ".jpg"); // the File to save to
-//                    OutputStream fOut = new FileOutputStream(file);
-//
-//                    scale.compress(Bitmap.CompressFormat.JPEG, 100, fOut); // saving the Bitmap to a file compressed as a JPEG with 100% compression rate
-//                    fOut.flush();
-//                    fOut.close(); // do not forget to close the stream
-//
-//                    Uri fileUri = android.net.Uri.parse(file.toURI().toString());
-//
-//
-//                    System.out.println("receive picture from gallery.");
-//                    Intent resultIntent = new Intent(this, ResultActivity.class);
-//                    System.out.println("selectedImage gallery is " + fileUri);
-//                    resultIntent.putExtra("pictureUri", fileUri);
-//                    resultIntent.putExtra("width", scale.getWidth());
-//                    resultIntent.putExtra("height", scale.getHeight());
-//                    //startActivityForResult(resultIntent, GALLERY_REQUEST_CODE);
                 }
                 else if (resultCode == RESULT_CANCELED) {
                     // User cancelled the image capture
@@ -443,6 +369,13 @@ public class MainMenuActivity extends AppCompatActivity {
         double screenWidth = dm.widthPixels;
         double screenHeight = dm.heightPixels;
 
+        if (screenWidth >= 1440) {
+            screenWidth = 1080;
+            double bigScreenScale = screenHeight / screenWidth;
+            screenHeight = bigScreenScale * 1080;
+            screenWidth = 1080;
+        }
+
         int width = scale.getWidth();
         int height = scale.getHeight();
 
@@ -458,18 +391,7 @@ public class MainMenuActivity extends AppCompatActivity {
         else
             scaleRatio = scaleRatioWidth;
 
-        System.out.println("Screen resolution: " + screenWidth + "x" + screenHeight);
-
         return Bitmap.createScaledBitmap(scale, (int) (width * scaleRatio), (int) (height * scaleRatio), true);
-    }
-
-    // Add the Photo to a Gallery
-    private void galleryAddPic() {
-        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        storageDir = getAlbumStorageDir("ChromaVision");
-        Uri contentUri = Uri.fromFile(storageDir);
-        mediaScanIntent.setData(contentUri);
-        this.sendBroadcast(mediaScanIntent);
     }
 
     public void tutorial(View view) {
@@ -494,5 +416,72 @@ public class MainMenuActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    private void buttonListeners() {
+        final ImageView newPictureImageView = (ImageView) findViewById(R.id.button1);
+        if (newPictureImageView != null) {
+            newPictureImageView.setOnTouchListener(new View.OnTouchListener() {
+
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    Log.i("IMAGE", "motion event: " + event.toString());
+                    switch (event.getAction()) {
+                        case MotionEvent.ACTION_DOWN: {
+                            newPictureImageView.setImageResource(R.drawable.new_picture_pressed);
+                            break;
+                        }
+                        case MotionEvent.ACTION_UP: {
+                            newPictureImageView.setImageResource(R.drawable.new_picture);
+                            break;
+                        }
+                    }
+                    return false;
+                }
+            });
+        }
+
+        final ImageView imageGalleryImageView = (ImageView) findViewById(R.id.button2);
+        if (imageGalleryImageView != null) {
+            imageGalleryImageView.setOnTouchListener(new View.OnTouchListener() {
+
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    Log.i("IMAGE", "motion event: " + event.toString());
+                    switch (event.getAction()) {
+                        case MotionEvent.ACTION_DOWN: {
+                            imageGalleryImageView.setImageResource(R.drawable.image_gallery_pressed);
+                            break;
+                        }
+                        case MotionEvent.ACTION_UP: {
+                            imageGalleryImageView.setImageResource(R.drawable.image_gallery);
+                            break;
+                        }
+                    }
+                    return false;
+                }
+            });
+        }
+
+        final ImageView viewSavedImageView = (ImageView) findViewById(R.id.button3);
+        if (viewSavedImageView != null) {
+            viewSavedImageView.setOnTouchListener(new View.OnTouchListener() {
+
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    Log.i("IMAGE", "motion event: " + event.toString());
+                    switch (event.getAction()) {
+                        case MotionEvent.ACTION_DOWN: {
+                            viewSavedImageView.setImageResource(R.drawable.view_saved_pressed);
+                            break;
+                        }
+                        case MotionEvent.ACTION_UP: {
+                            viewSavedImageView.setImageResource(R.drawable.view_saved);
+                            break;
+                        }
+                    }
+                    return false;
+                }
+            });
+        }
+    }
 
 }

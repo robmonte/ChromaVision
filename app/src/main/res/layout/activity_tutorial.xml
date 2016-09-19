@@ -24,7 +24,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:text="CAPTURE A NEW PICTURE"
+                android:text="NEW PICTURE"
                 android:textStyle="bold"
                 android:textSize="23sp"
                 android:textColor="#000000"
@@ -35,7 +35,7 @@
                 android:id="@+id/tutorial1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Click on 'CAPTURE A NEW PICTURE' to use the camera on your phone to take a new picture. After you confirm your photo, you will be given the option to crop the photo if you would like. The cropped photo will be saved into the device's external storage directory's Pictures folder in a custom folder named ChromaVision. Keep in mind that the tighter you crop your picture the faster the color algorithm will be able to run."
+                android:text="Click on 'NEW PICTURE' to use the camera on your device to take a new picture. After you confirm your photo, you will be given the option to crop the photo if you would like. The cropped photo will be saved into the device's external storage directory 'Pictures' folder, in a custom folder named ChromaVision. Keep in mind that the tighter you crop your picture the faster the color algorithm will be able to run.\n"
                 android:layout_margin="5dp"
                 android:layout_below="@id/capturePic"
                 android:textSize="18sp"
@@ -47,7 +47,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:text="\nOPEN IMAGE FROM GALLERY"
+                android:text="IMAGE GALLERY"
                 android:textStyle="bold"
                 android:layout_below="@id/tutorial1"
                 android:textSize="23sp"
@@ -58,16 +58,18 @@
                 android:layout_width="wrap_content"
                 android:id="@+id/tutorial2"
                 android:layout_height="wrap_content"
-                android:text="If you have a photo that you already have stored on your phone and would like to use ChromaVision on that instead, you can click on the 'OPEN IMAGE FROM GALLERY' button. Here you will be able to select the image you have in mind. The app will load the image and again show the option to crop the photo to cut down on unnecessary size and excess colors you don't care about. This is particularly useful if you have an image from the internet or if your device does not have a physical camera."
+                android:text="If you have an image that you already have saved and would like to use ChromaVision on it, you can click on the 'IMAGE GALLERY' button. Here you will be able to select the image you have in mind. The app will again show the option to crop the picture to cut down on unnecessary size and excess colors you don't care about. This is particularly useful if you have an image from the internet or if your device does not have a physical camera so that you can exclude any extra parts inside the picture.\n"
                 android:layout_below="@id/OpenImage"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                android:layout_alignLeft="@+id/OpenImage"
+                android:layout_alignStart="@+id/OpenImage" />
 
             <TextView
                 android:id="@+id/LoadLast"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:text="\nLOAD PREVIOUS IMAGE DATA"
+                android:text="VIEW SAVED"
                 android:textStyle="bold"
                 android:layout_below="@id/tutorial2"
                 android:textSize="23sp"
@@ -77,17 +79,19 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="To review photos that have already been processed through ChromaVision, simply click on 'LOAD PAST IMAGE DATA'. This will bring up a neat list of all the files you have processed and chosen to save to your device. When you save any data you wish to keep, you will be prompted to name it with any name you wish, so this list is a recognizable list of words chosen by you to help you remember exactly what you are looking for. After reviewing the results if you decide you no longer need it, a 'DELETE' button will be in the upper-right hand corner of the screen. If you want to rename any of your saved data, then simply tap and hold on the filename in the list that you want to change and enter a new name for it."
+                android:text="To see all the previous pictures you've ran and saved through ChromaVision, simply click on 'VIEW SAVED'. This will bring up a list of all the files you have processed and chosen to save to your device. When you save any data you wish to keep, you will be prompted to name it with any words you wish, so this list is a recognizable list of names chosen by you to help you remember exactly what you are looking for. After reviewing the results if you decide you no longer need it, a 'DELETE' button will be in the upper-right hand corner of the screen. If you want to rename any of your saved data, then simply tap and hold on the filename in the list that you want to change and enter a new name for it.\n"
                 android:textSize="18sp"
                 android:id="@+id/extra"
-                android:layout_below="@id/LoadLast" />
+                android:layout_below="@id/LoadLast"
+                android:layout_alignLeft="@+id/bottom"
+                android:layout_alignStart="@+id/bottom" />
 
             <TextView
                 android:id="@+id/bottom"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:text="\nEXTRA INFORMATION"
+                android:text="EXTRA INFORMATION"
                 android:textStyle="bold"
                 android:layout_below="@id/extra"
                 android:textSize="23sp"
@@ -96,9 +100,11 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="If you would like to see this tutorial again, show the welcome dialog the app first presents you on the first run, or to view more information about the app and the creators, you can click the menu button on the Main Menu, (the screen before this one) and choose one of the options listed. If you check 'Show welcome' or 'Show tutorial', the app will know to present you with that information again."
+                android:text="If you would like to see this tutorial again or view the welcome dialog you saw when first laucnhing ChromaVision, you can click the menu button at the top of the Main Menu(the screen before this one), and choose one of the options listed. If you check 'Show welcome' or 'Show tutorial', the app will know to present you with that information again."
                 android:textSize="18sp"
-                android:layout_below="@id/bottom" />
+                android:layout_below="@id/bottom"
+                android:layout_alignLeft="@+id/bottom"
+                android:layout_alignStart="@+id/bottom" />
 
         </RelativeLayout>
     </ScrollView>

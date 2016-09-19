@@ -4,6 +4,8 @@
     <item android:id="@+id/save"
         android:title="Save"
         android:visible="false"
-        app:showAsAction="always"/>
+        app:showAsAction="always"
+        android:actionLayout="@layout/activity_result"
+        />
 
 </menu>

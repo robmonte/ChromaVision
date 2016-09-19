@@ -46,16 +46,13 @@ public class FileListActivity extends AppCompatActivity{
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         setContentView(R.layout.activity_file_list);
-//        Toolbarbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
         itemValue = null;
 
         files = new ArrayList<>();
         getFileList();
         listview = (ListView) findViewById(R.id.list);
-//        content = (TextView) findViewById(R.id.FileTextView);
-        ArrayAdapter adapter
-                = new ArrayAdapter<>(this, R.layout.list_item, android.R.id.text1, files);
+        ArrayAdapter adapter = new ArrayAdapter<>(this, R.layout.list_item, android.R.id.text1, files);
         listview.setAdapter(adapter);
 
         listview.setOnItemLongClickListener(
@@ -63,19 +60,12 @@ public class FileListActivity extends AppCompatActivity{
                     @Override
                     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 
-                        /* IMPLEMENT RENAMING SAVED FILES */
 
-                        FileListActivity mFile = new FileListActivity();
-
-                        System.out.println("++++++++++++" + getFilesDir().toString());
-
-                        // ListView Clicked item index
                         int itemPosition = position;
                         view.setSelected(true);
-                        // ListView Clicked item value
                         itemValue = (String) listview.getItemAtPosition(position);
                         Uri uri = Uri.fromFile(new File(getFilesDir().toString() + "/" + itemValue));
-                        System.out.println("click: Position: " + itemPosition + ", ListItem: " + itemValue + ", uri: " + uri.toString());
+                        Log.d(TAG, "longclick: Position: " + itemPosition + ", ListItem: " + itemValue + ", uri: " + uri.toString());
 
                         renameFile(uri);
                         return true;
@@ -91,7 +81,7 @@ public class FileListActivity extends AppCompatActivity{
                         view.setSelected(true);
                         // ListView Clicked item value
                         itemValue = (String) listview.getItemAtPosition(position);
-                        System.out.println("click: Position: " + itemPosition + ", ListItem: " + itemValue);
+                        Log.d(TAG, "click: Position: " + itemPosition + ", ListItem: " + itemValue);
                     }
                 });
     }
@@ -143,14 +133,12 @@ public class FileListActivity extends AppCompatActivity{
                         input.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
                         fileName = input.getText().toString();
                         int length = fileName.length();
-                        System.out.println(fileName);
-                        System.out.println("char at end " + fileName.charAt(length-1));
                         while (fileName.charAt(fileName.length()-1) == ' ')
                             fileName = fileName.substring(0, fileName.length()-1);
 
                         if(fileName.length() > 4) {
                             String end = fileName.substring(length - 4);
-                            System.out.println("******end is " + end);
+
                             if (!end.equals(".jpg"))
                                 fileName += ".jpg";
                         }
@@ -162,9 +150,6 @@ public class FileListActivity extends AppCompatActivity{
 
                         File toPicture = new File(getFilesDir().toString() + "/" + toPictureName);
                         File toData = new File(getFilesDir().toString() + "/" + toDataName);
-
-                        System.out.println("rename picTo abs path is: " + toPicture.getAbsolutePath());
-                        System.out.println("rename dataTo abs path is: " + toData.getAbsolutePath());
 
                         fromPicture.renameTo(toPicture);
                         fromData.renameTo(toData);

@@ -1,10 +1,7 @@
 package cs371m.chromavision;
 
-import android.app.FragmentManager;
-import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -13,7 +10,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
@@ -23,7 +19,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -45,12 +40,7 @@ import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
-import java.util.Locale;
-import java.util.Random;
-import java.util.Scanner;
 
 public class ResultActivity extends AppCompatActivity {
 
@@ -67,12 +57,6 @@ public class ResultActivity extends AppCompatActivity {
     private FileInputStream fis;
     private Uri pictureUri;
     private boolean doneAsync;
-
-//    private enum COLORS { BLACK, VERY_DARK_RED, DARK_RED, MEDIUM_RED, BRIGHT_RED, PALE_RED, LIGHT_RED, VERY_LIGHT_RED, WHITE }
-//
-//    private static final int[] COLOR_LIST = { Color.rgb(0x00, 0x00, 0x00), Color.rgb(0x40, 0x00, 0x00), Color.rgb(0x80, 0x00, 0x00),
-//            Color.rgb(0xC0, 0x00, 0x00), Color.rgb(0xFF, 0x00, 0x00), Color.rgb(0xFF, 0xC0, 0x00),
-//            Color.rgb(0xFF, 0x80, 0x80), Color.rgb(0xFF, 0xC0, 0xC0), Color.rgb(0xFF, 0xFF, 0xFF) };
 
 
     private enum COLORS { DARK_RED, RED, LIGHT_RED,
@@ -114,50 +98,53 @@ public class ResultActivity extends AppCompatActivity {
         }
 
        final ImageView mImageView = (ImageView) findViewById(R.id.resultImage);
-        System.out.println("Getting the cropped picture from " + pictureUri);
-        mImageView.setDrawingCacheEnabled(true);
-        mImageView.setOnTouchListener( new View.OnTouchListener(){
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent){
 
-                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN || motionEvent.getAction() == MotionEvent.ACTION_MOVE){
+        if (mImageView != null) {
+            mImageView.setDrawingCacheEnabled(true);
+            mImageView.setOnTouchListener( new View.OnTouchListener(){
+                @Override
+                public boolean onTouch(View view, MotionEvent motionEvent){
 
-                    int x = (int)motionEvent.getX();
-                    int y = (int)motionEvent.getY();
+                    if (motionEvent.getAction() == MotionEvent.ACTION_DOWN || motionEvent.getAction() == MotionEvent.ACTION_MOVE){
 
-                    bitmap = mImageView.getDrawingCache();
-                    if(y < 0 || x < 0 || y > bitmap.getHeight() || x > bitmap.getWidth()) {
+                        int x = (int)motionEvent.getX();
+                        int y = (int)motionEvent.getY();
 
+                        bitmap = mImageView.getDrawingCache();
+                        if(y < 0 || x < 0 || y > bitmap.getHeight() || x > bitmap.getWidth()) {
+                            // Touched outside of the image boundaries
+                        }
+                        else {
+                            int pixel = bitmap.getPixel(x, y);
+                            int redValue = Color.red(pixel);
+                            int blueValue = Color.blue(pixel);
+                            int greenValue = Color.green(pixel);
 
+                            TextView clickPixelBackground = (TextView) findViewById(R.id.clickPixel);
+                            TextView clickPixelLocation = (TextView) findViewById(R.id.clickPixelText);
+                            LinearLayout border = (LinearLayout) findViewById(R.id.clickPixelBorder);
+                            if (border != null) {
+                                border.setBackgroundColor(Color.BLACK);
+                            }
+                            if (clickPixelBackground != null) {
+                                clickPixelBackground.setBackgroundColor(Color.rgb(redValue, greenValue, blueValue));
+                            }
 
+                            float [] Hsb = new float[3];
+                            Color.RGBToHSV(redValue,greenValue,blueValue, Hsb);
+                            String loc = "(" + x + ", " + y + ") is " + getTouchedColor(Hsb).toString();
+
+                            if (clickPixelLocation != null) {
+                                clickPixelLocation.setText(loc);
+                            }
+
+                        }
                     }
-                    else {
-                        int pixel = bitmap.getPixel(x, y);
-                        int redValue = Color.red(pixel);
-                        int blueValue = Color.blue(pixel);
-                        int greenValue = Color.green(pixel);
-                        //System.out.println();
-
-                        TextView clickPixelBackground = (TextView) findViewById(R.id.clickPixel);
-                        TextView clickPixelLocation = (TextView) findViewById(R.id.clickPixelText);
-                        LinearLayout border = (LinearLayout) findViewById(R.id.clickPixelBorder);
-                        border.setBackgroundColor(Color.BLACK);
-                        clickPixelBackground.setBackgroundColor(Color.rgb(redValue, greenValue, blueValue));
-                        System.out.println(x + " , " + y);
-                        System.out.println("red =" + redValue + "blue = " + blueValue + "green = " + greenValue);
-                        //String loc = "(" + x + ", " + y + "): ";
-                       // clickPixelLocation.setText(loc);
-                        float [] Hsb = new float[3];
-                        Color.RGBToHSV(redValue,greenValue,blueValue, Hsb);
-                        String loc = "(" + x + ", " + y + ") is " + getTouchedColor(Hsb).toString();
-                        clickPixelLocation.setText(loc);
-
-                    }
+                    return true;
                 }
-                return true;
-            }
 
-        });
+            });
+        }
         if (mImageView != null) {
             mImageView.setImageURI(pictureUri);
         }
@@ -367,14 +354,13 @@ public class ResultActivity extends AppCompatActivity {
                         input.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
                         fileName = input.getText().toString();
                         int length = fileName.length();
-                        System.out.println(fileName);
-                        System.out.println("char at end " + fileName.charAt(length-1));
+
                         while (fileName.charAt(fileName.length()-1) == ' ')
                             fileName = fileName.substring(0, fileName.length()-1);
 
                         if(fileName.length() > 4) {
                             String end = fileName.substring(length - 4);
-                            System.out.println("******end is " + end);
+
                             if (!end.equals(".jpg"))
                                 fileName += ".jpg";
                         }
@@ -405,8 +391,6 @@ public class ResultActivity extends AppCompatActivity {
 
     private void saveFile() {
         if (saved == 0) {
-            System.out.println("Are you actually saving file?");
-            System.out.println(fileName);
             try {
 
                 InputStream load = null;
@@ -450,14 +434,14 @@ public class ResultActivity extends AppCompatActivity {
 
                 PrintStream writer = new PrintStream(fosText);
                 writer.println(resultPicture);
-                System.out.println(resultPicture);
+
                 writer.close();
                 fis = openFileInput(fileName);
 
                 saved = 1;
 
                 File delete = new File(pictureUri.getPath());
-                System.out.println("Deleting " + delete.getAbsolutePath());
+
                 delete.delete();
 
             }
@@ -470,44 +454,30 @@ public class ResultActivity extends AppCompatActivity {
 
     public void readFile() {
         FileListActivity mFile = new FileListActivity();
-        File dir = this.getFilesDir();
-        System.out.println(getFilesDir().toString());
 
         try {
             Uri uri = Uri.fromFile(new File(mFile.itemValue));
-
-//            InputStream in = null;
-//
-//            try {
-//                in = getContentResolver().openInputStream(uri);
-//            }
-//            catch (FileNotFoundException e) {
-//                e.printStackTrace();
-//            }
-//
-//            Bitmap image = BitmapFactory.decodeStream(in);
             ImageView imageView = (ImageView) findViewById(R.id.resultImage);
-            //imageView.setImageBitmap(image);
 
             try {
-                imageView.setImageURI(uri);
+                if (imageView != null) {
+                    imageView.setImageURI(uri);
+                }
             }
-            catch (NullPointerException n){
-                System.out.println("Reading File line by line using Bufferreader");
+            catch (NullPointerException e){
+                e.printStackTrace();
 
             }
 
-//            Uri uri = Uri.fromFile(new File(fileName + ".chroma"));
             fis = openFileInput(mFile.itemValue + ".chroma");
             BufferedReader reader;
             reader = new BufferedReader(new InputStreamReader(fis));
-            System.out.println("Reading File line by line using Bufferreader");
-            String line = reader.readLine();
 
+            String line = reader.readLine();
             StringBuilder output = new StringBuilder();
 
             while (line != null) {
-                System.out.println(line);
+
                 output.append(line);
                 output.append("\n");
                 line = reader.readLine();
@@ -516,96 +486,9 @@ public class ResultActivity extends AppCompatActivity {
         }
         catch (IOException e)
         {
-            ;
+            e.printStackTrace();
         }
     }
-
-
-//        try {
-//            String content = new Scanner(new File(name)).useDelimiter("\\Z").next();
-//            System.out.println(content);
-//
-//        }
-//        catch(FileNotFoundException e1) {
-//            Log.d(TAG, "Exception trying to read file: " + e1);
-//        }
-
-
-//    private void generateColorData(Uri pictureToProcess) {
-//        InputStream cameraInput = null;
-//
-//        try {
-//            cameraInput = getContentResolver().openInputStream(pictureToProcess);
-//        }
-//        catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        }
-//
-//        Bitmap image = BitmapFactory.decodeStream(cameraInput);
-//
-//        String[][] colors = new String[image.getHeight()][image.getWidth()];
-//
-//        int[][] result = determineColors(image, colors);
-//    }
-
-//    private int[][] determineColors(Bitmap image, String[][] colors) {
-//
-//        int width = image.getWidth();
-//        int height = image.getHeight();
-//
-//        int[] pixels = new int[width*height];
-//
-//        image.getPixels(pixels, 0, width, 0, 0, width, height);
-//
-//
-//        int[][] result = new int[height][width];
-//
-//        for (int pixel=0, row=0, col=0; pixel<pixels.length; pixel++) {
-//            int c = pixels[pixel];
-//
-//            colors[row][col] = colorDistanceEnum(c).toString();
-//
-//            col++;
-//            if (col == width) {
-//                col = 0;
-//                row++;
-//            }
-//        }
-//
-//        return result;
-//    }
-
-//    private COLORS colorDistanceEnum(int c) {
-//        double lowest = 442.0;
-//        int index = 0;
-//
-//        for (int i=0; i<COLOR_LIST.length; i++) {
-//            int r = Color.red(COLOR_LIST[i]);
-//            int g = Color.green(COLOR_LIST[i]);
-//            int b = Color.blue(COLOR_LIST[i]);
-//
-//            double low = distance(c, r, g, b);
-//
-//            if (low < lowest) {
-//                lowest = low;
-//                index = i;
-//            }
-//        }
-//
-//        colorCount[index]++;
-//
-//        return COLORS.values()[index];
-//    }
-
-//    private static double distance(int c, int r, int g, int b) {
-//        double redDiff = Math.pow(Color.red(c) - r, 2);
-//        double greenDiff = Math.pow(Color.green(c) - g, 2);
-//        double blueDiff = Math.pow(Color.blue(c) - b, 2);
-//
-//        return Math.sqrt(redDiff + greenDiff + blueDiff);
-//    }
-//
-//}
 
     class GenerateColorDataAsync extends AsyncTask<Uri, Integer, StringBuilder> {
 
@@ -628,51 +511,8 @@ public class ResultActivity extends AppCompatActivity {
             }
 
             Bitmap image = BitmapFactory.decodeStream(cameraInput);
-
             String[][] colors = new String[image.getHeight()][image.getWidth()];
-
             determineColors(image, colors);
-
-//            int[][] newPicture = new int[height][width];
-//
-//            for (int i=0; i<colors.length; i++) {
-//                for (int j=0; j<colors[i].length; j++) {
-//                    //String name = colors[i][j];
-//
-//                    //int index = COLORS.valueOf(name).ordinal();
-//
-//                    newPicture[i][j] = COLOR_LIST[COLORS.valueOf(colors[i][j]).ordinal()];
-//                }
-//            }
-
-            //Bitmap testOut = bitmapFromArray(newPicture);
-
-//            File storageDir = getAlbumStorageDir("ChromaVisionDebug");
-//
-//            Locale mylocale = new Locale("en");
-//            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", mylocale).format(new Date());
-            //File file = new File(storageDir, "testColors" + timeStamp + ".jpg"); // the File to save to
-            //OutputStream fOut = null;
-
-//            try {
-//                fOut = new FileOutputStream(file);
-//            } catch (FileNotFoundException e) {
-//                e.printStackTrace();
-//            }
-
-            //testOut.compress(Bitmap.CompressFormat.JPEG, 100, fOut); // saving the Bitmap to a file compressed as a JPEG with 100% compression rate
-
-//            try {
-//                if (fOut != null) {
-//                    fOut.flush();
-//                    fOut.close();
-//                }
-//            }
-//            catch (IOException e) {
-//                e.printStackTrace();
-//            }
-
-            System.out.println(Arrays.toString(colorCount));
 
             double imageSize = width * height;
             String[] outputArray = new String[COLOR_LIST.length];
@@ -680,7 +520,6 @@ public class ResultActivity extends AppCompatActivity {
             DecimalFormat df = new DecimalFormat("#.##");
 
             for (int i=0; i<outputArray.length; i++) {
-                System.out.println(colorCount[i] + " / " + imageSize);
                 double percent = (colorCount[i] / imageSize) * 100;
 
                 if (percent != 0 && !df.format(percent).equals("0") && !df.format(new BigDecimal(percent).setScale(2, RoundingMode.HALF_UP).doubleValue()).equals("0")) {
@@ -733,8 +572,6 @@ public class ResultActivity extends AppCompatActivity {
                 double row = values[0];
                 double progress = row / values[1];
                 int update = (int)(progress * 100);
-                if (update % 10 == 0)
-                    System.out.println(update);
                 mProgressBar.setProgress(update);
             }
             else
@@ -755,25 +592,16 @@ public class ResultActivity extends AppCompatActivity {
 
             int width = image.getWidth();
             int height = image.getHeight();
-
             int[] pixels = new int[width*height];
 
             image.getPixels(pixels, 0, width, 0, 0, width, height);
-
-
-            //int[][] result = new int[height][width];
 
             for (int pixel=0, row=0, col=0; pixel<pixels.length; pixel++) {
                 int c = pixels[pixel];
 
                 float hsv[] = new float[3];
                 Color.RGBToHSV(Color.red(c), Color.green(c), Color.blue(c), hsv);
-
-                //colors[row][col] = colorDistanceEnum(c).toString();
-                colors[row][col] = hsbEnum(hsv).toString();
-
-                //int index = COLORS.valueOf(colors[row][col]).ordinal();
-                //result[row][col] = COLOR_LIST[index];
+                colors[row][col] = determineColor(hsv).toString();
 
                 col++;
                 if (col == width) {
@@ -784,28 +612,6 @@ public class ResultActivity extends AppCompatActivity {
                 }
             }
         }
-
-//        private COLORS colorDistanceEnum(int c) {
-//            double lowest = 442.0;
-//            int index = 0;
-//
-//            for (int i=0; i<COLOR_LIST.length; i++) {
-//                int r = Color.red(COLOR_LIST[i]);
-//                int g = Color.green(COLOR_LIST[i]);
-//                int b = Color.blue(COLOR_LIST[i]);
-//
-//                double low = distance(c, r, g, b);
-//
-//                if (low < lowest) {
-//                    lowest = low;
-//                    index = i;
-//                }
-//            }
-//
-//            colorCount[index]++;
-//
-//            return COLORS.values()[index];
-//        }
 
         private double distance(int c, int r, int g, int b) {
             double redDiff = Math.pow(Color.red(c) - r, 2);
@@ -819,8 +625,7 @@ public class ResultActivity extends AppCompatActivity {
         *  ANDROID HUE VALUE IS ALREADY 0-360!!!
         *  DON'T MULTIPLY BY 360!!
         */
-
-        private COLORS hsbEnum(float[] hsb) {
+        private COLORS determineColor(float[] hsb) {
             float deg = hsb[0];
 
             if (hsb[2] < 0.1 ) {

@@ -1,0 +1,55 @@
+Tony Sampson - tcs788
+Robert Moterfusco - rtm663
+Yajie Niu - yn2543
+
+
+
+b. In order to visually see the name of the color that is touched by the user, a newer phone with a medium to large screen is required.
+
+
+
+c. Features include:
+- the ability to take a picture with your phone which are saved to a unique folder in your phone. 
+- the ability to crop and resize pictures to the necessary specifications.
+- the ability to find out how much of a picture consist of red,light red, dark red and black pixels.
+- access photos already on the phone to check the color of all of the pixels displayed on the picture
+- touch the pictures to see the colors of specific parts of your selcted image
+- open the default internal storage folder of our app to access pictures on the phone.
+
+d. - Highlight the specefic colors in the selcted image associated with a choosen color.
+
+
+e.
+- touch the pictures to see the colors of specific parts of your selcted image.
+- A toolbar that displays options on displaying tutorial features.
+- 
+
+
+f. 
+Major chunks of code we found online:
+ We use the Image Crop tool by calling this line:
+CropImage.activity(photoUri).setGuidelines(CropImageView.Guidelines.ON).start(this);
+public boolean onTouch(View view, MotionEvent motionEvent)
+
+
+
+We found help with naming and saving image files from the Android page:
+https://developer.android.com/training/camera/photobasics.html
+
+g. 
+Major chunks of code we wrote:
+private void generateColorData(Uri pictureToProcess);
+private int[][] convertTo2DWithoutUsingGetRGB(Bitmap image, String[][] colors);
+private COLORS colorDistanceEnum(int c);
+private static double distance(int c, int r, int g, int b);
+private Bitmap resizeImageToScreen(Bitmap scale);
+
+private void readFile()
+protected void nameFile(View v)
+private void saveFile()
+public void readFile() 
+private void getFileList()
+public void readFileO (View view)
+public void takeAPicture(View view)
+public void pickFromGallery(View view) 
+public void openFolder(View view)
