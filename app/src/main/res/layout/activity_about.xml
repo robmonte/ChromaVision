@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:background="@drawable/grey_squares_repeating" >
 
     <TextView
         android:layout_width="match_parent"
@@ -27,7 +28,7 @@
         android:layout_height="0dp"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textSize="20sp"
-        android:text="An app by:\nRobert Montefusco\nTony Sampson\nYajie Niu\n\nFor CS371M Mobile Computing\nat the University of Texas at Austin\n\nAnd for those who need help with colors!\n\n\nSupport email: robert.t.montefusco@utexas.edu"
+        android:text="An app by:\nRobert Montefusco\nTony Sampson\nYajie Niu\n\nFor CS371M Mobile Computing\nat the University of Texas at Austin\n\nAnd for those who need help with colors!\n\n\nSupport email: chromavisionapp@gmail.com"
         android:layout_weight="0.6"
         android:gravity="center_horizontal"
         android:id="@+id/textView2"

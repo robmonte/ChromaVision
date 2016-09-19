@@ -149,10 +149,19 @@ public class ResultActivity extends AppCompatActivity {
             mImageView.setImageURI(pictureUri);
         }
 
+        InputStream cameraInput = null;
+        try {
+            cameraInput = getContentResolver().openInputStream(pictureUri);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        Bitmap scale = BitmapFactory.decodeStream(cameraInput);
+
+        System.out.println(scale.getWidth() + " " + scale.getHeight());
+
         mTextView = (TextView)findViewById(R.id.colorDataView);
 
         mRunPicture = new GenerateColorDataAsync();
-        // generateColorData(picture);
         mRunPicture.execute(pictureUri);
 
     }

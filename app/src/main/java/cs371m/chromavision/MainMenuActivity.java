@@ -369,12 +369,12 @@ public class MainMenuActivity extends AppCompatActivity {
         double screenWidth = dm.widthPixels;
         double screenHeight = dm.heightPixels;
 
-        if (screenWidth >= 1440) {
-            screenWidth = 1080;
-            double bigScreenScale = screenHeight / screenWidth;
-            screenHeight = bigScreenScale * 1080;
-            screenWidth = 1080;
-        }
+//        // Enables strict scaling of images
+//        if (screenWidth >= 720) {
+//            screenWidth = 720;
+//            double bigScreenScale = screenHeight / screenWidth;
+//            screenHeight = bigScreenScale * 720;
+//        }
 
         int width = scale.getWidth();
         int height = scale.getHeight();
