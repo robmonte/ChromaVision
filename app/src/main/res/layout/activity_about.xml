@@ -28,10 +28,11 @@
         android:layout_height="0dp"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textSize="20sp"
-        android:text="An app by:\nRobert Montefusco\nTony Sampson\nYajie Niu\n\nFor CS371M Mobile Computing\nat the University of Texas at Austin\n\nAnd for those who need help with colors!\n\n\nSupport email: chromavisionapp@gmail.com"
+        android:text="Version 1.01\n\nAn app by:\nRobert Montefusco\nTony Sampson\nYajie Niu\n\nFor CS371M Mobile Computing\nat The University of Texas at Austin\n\nAnd for those who need help with colors!\n\n\nSupport email: chromavisionapp@gmail.com \n\n\nPrivacy policy: https://raw.githubusercontent.com/robmonte/ChromaVision/master/PRIVACY.txt"
         android:layout_weight="0.6"
         android:gravity="center_horizontal"
         android:id="@+id/textView2"
-        android:autoLink="email" />
+        android:autoLink="email|web"
+        android:linksClickable="true" />
 
 </LinearLayout>
