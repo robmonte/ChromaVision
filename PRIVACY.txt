@@ -1,0 +1,9 @@
+ChromaVision Privacy Policy
+
+ChromaVision requests access to a device's camera and storage features.
+
+Camera: The camera is required for the taking of pictures of anything around the user in the real world that they wish to have the colors evaluated for. This permission may be safely denied if the user only wishes to run the app with images already stored on their device.
+
+Storage: The external storage is required for saving any color data for an image that the user may want to view again in the future without having to wait for the app to run again. This permission is required to run any meaningful function of the app at all and cannot be safely denied.
+
+Note that we do not store user data ourselves. These two permissions are used exclusively within the app and the device's realm only and do not store nor transmit any of the users' data over the network or to any other location.
